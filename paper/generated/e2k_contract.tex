@@ -1,0 +1,10 @@
+\begin{tabular}{llccccc}
+\toprule
+Contract & Condition & timeout (committed) & 500 (committed) & timeout (late commit) & partial batch & redelivery \\
+\midrule
+native & vanilla & 0 & 8 & 58 & 33 & 74 \\
+native & guard & 0 & 0 & 69 & 0 & 74 \\
+keys-everywhere & vanilla & 0 & 0 & 2 & 0 & 0 \\
+keys-everywhere & guard & 0 & 0 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}

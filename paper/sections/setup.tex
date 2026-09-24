@@ -1,0 +1,91 @@
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Models.} We evaluate \NModels{} models reachable through one gateway, spanning four providers and
+several capability tiers: \texttt{gpt-6-astra}, \texttt{gpt-6-sol}, \texttt{gpt-5.6-sol}, \texttt{gpt-5.4-mini}
+and \texttt{gpt-4.1} (OpenAI), \texttt{claude-opus-5.5} (Anthropic), \texttt{gemini-3.8-flash} (Google) and
+\texttt{grok-4.7} (xAI). All models are used with provider-default
+sampling and reasoning settings. Model identifiers are those exposed by the gateway at the time of the study
+(September 2026). One preregistered model was withdrawn before publication; it is excluded from all analyses and
+from the released data.
+
+\paragraph{Minimal scaffold.} The scaffold is a standard function-calling loop \citep{yao2023react}: a fixed
+system prompt (Appendix~\ref{app:prompts}), the task as the first user message, the tools of the task's
+services plus the three general tools, and up to 40 tool calls. Parallel tool calls are executed in order.
+If a turn contains no tool call, the scaffold asks the model once more to continue or finish; after three
+such turns the episode ends. The same conversation is rendered to the chat-completions or the responses
+protocol depending on the model, with reasoning items replayed where the protocol supports it.
+
+\paragraph{Production harnesses.} We run three agent command-line interfaces non-interactively in an empty
+temporary directory with \bench{} as their only MCP server: GitHub Copilot CLI 1.0.86, Hermes Agent 0.20.6 and
+OpenAI Codex CLI 0.139. Each harness keeps its own system prompt, tool-call protocol, context management and
+retry logic; we prepend the same operational preamble to the task (Appendix~\ref{app:prompts}), restrict the
+harness to the sandbox's tools where it allows this, and give each episode a fresh harness home directory.
+All harnesses reach their models through the same gateway as the scaffold, which lets us cross harnesses with
+models.
+
+\paragraph{Contract variants.} In the \emph{native} contract (Table~\ref{tab:services}) only billing and one
+social platform accept idempotency keys. The counterfactual \emph{keys-everywhere} contract extends
+Stripe-style key semantics to every non-idempotent write, including resumable batches, late commits and
+redelivered requests, and documents the new parameter in each tool description. Nothing else changes.
+
+\paragraph{Recovery conditions.} Two conditions change only the prompt: \emph{aware} adds five sentences of
+reliability guidance to the system prompt, and \emph{reflect} inserts a generic reflection request after any
+turn with a tool error \citep{shinn2023reflexion}. The remaining conditions wrap tool execution, as a framework or
+middleware would, and never see ground truth: \emph{sdk-retry} transparently retries timeouts, 5xx and 429
+responses up to three times with exponential backoff, mimicking common client defaults; \emph{rules} retries
+only 429 and 503 responses; \emph{vbr} (verify-before-retry, after \citet{mansoor2026verified}) intercepts a
+write whose identical predecessor returned an ambiguous error and runs its declared read-back first, sending
+the write only if the effect is absent; \emph{wait~$\Delta$} (E5) additionally assumes an in-flight bound of
+$\Delta$ seconds and defers that read-back until $\Delta$ seconds, plus the documented visibility lag, after the
+original request was sent; and \emph{guard} adds four contract-driven components to vbr---automatic
+idempotency keys where the contract accepts them, re-verification after the documented visibility lag,
+blocking an unverifiable non-idempotent repeat with a request to escalate, and an annotation telling the
+model that an outcome is unknown. Two reference conditions may read ground truth. The \emph{state oracle} is the
+guard verifying against the current ground-truth state; it cannot see a request that is still in flight, so it
+is \emph{not} an upper bound under late commits. The \emph{outcome oracle} also sees in-flight requests and
+suppresses any re-issue of a write that will commit; it is the upper bound for any client-side policy, since only
+redelivery on writes without key support remains beyond its reach. In harness runs the wrappers execute inside
+the MCP server, so they apply to any harness without modification.
+
+\paragraph{Experiments.} E1 crosses the \NModels{} models with the eleven fault modes of the original design (all but
+the heavy-tailed late commit) and every focal write of two instances per template in the minimal scaffold, plus a
+fault-free episode per instance (\NEOne{} episodes with the supplement below), and adds instances for the two
+sparsest contract classes (partial batches and the unverifiable endpoint); \texttt{gpt-4.1} is served from a
+separate low-rate quota and was run in its own low-concurrency lane with the identical design. E2 crosses three
+models (\texttt{claude-opus-5.5}, \texttt{gpt-6-sol}, \texttt{gemini-3.8-flash}) with
+nine conditions (vanilla, aware, reflect, sdk-retry, rules, vbr, guard and the two oracles) and the eight fault
+modes most relevant to recovery, and repeats vanilla and guard under the keys-everywhere contract (E2k; \NETwo{}
+episodes in total). E3 runs Copilot CLI and Hermes with \texttt{claude-opus-5.5}, \texttt{gpt-5.6-sol} and
+\texttt{gemini-3.8-flash}, and Codex CLI (which speaks only the responses protocol) with \texttt{gpt-5.6-sol} and
+\texttt{gpt-6-sol}, natively and with the guard in the MCP server, on the core fault modes and two focal writes per
+template; the minimal scaffold is run on the identical design as the reference harness. E3k repeats the harness
+design under the keys-everywhere contract with one model shared by all four harnesses (\texttt{gpt-5.6-sol};
+\NEThree{} episodes for E3 and E3k). E4 probes robustness on two focal writes per template, compared with matched
+E2 episodes: tool descriptions without consistency statements or with explicit non-idempotency warnings, three
+paraphrases of the system prompt, an operator who never answers, and guard ablations (\NEFour{} episodes). E5 runs
+the wait-then-verify family ($\Delta \in \{0, 60, 120, 300\}$\,s under the fixed delay; $\{0, 60, 300, 900, 3600\}$\,s
+under the heavy-tailed delay) against vanilla, the guard, the outcome oracle and the keys-everywhere contract on the
+three E2 models and all focal writes of instance 0 (\NEFive{} episodes). E6 removes the closing ``exactly once''
+sentence from every instruction for five models on instance 0 and pairs each episode with its E1 counterpart
+(\NESix{} episodes).
+
+\paragraph{Statistics.} The world seed depends only on (template, instance, focal write, fault mode), so all
+models, harnesses, conditions and instruction variants face identical worlds, and comparisons are paired.
+Episodes that share a task template are correlated, and there are only twelve templates; a cluster bootstrap over
+so few clusters is anti-conservative and degenerate for cells with no events. Per-cell 95\% intervals are therefore
+Wilson intervals on a Kish effective sample size $n/(1+(\bar m-1)\rho)$, where $\bar m$ is the mean number of
+episodes per template in the cell and $\rho$ the within-cell intra-class correlation by template, estimated once
+per experiment. Regression analyses use a Bayesian binomial mixed model with random intercepts for template and
+template$\times$instance (as preregistered for H1, fitted by variational Bayes) and, as a frequentist check,
+generalized estimating equations clustered by template with bias-reduced (Mancl--DeRouen) standard errors and a
+$t$ reference with $G-1$ degrees of freedom. Paired binary outcomes use exact McNemar tests with Holm correction
+within each family; H4 uses the preregistered two one-sided tests (TOST) with a $\pm$5\,pp margin; observation
+equivalence is assessed by comparing first-action agreement across matched worlds with agreement across independent
+runs of the same world, and by a within-pair permutation test of the total variation distance. The Shapley
+decomposition of McFadden's pseudo-$R^2$ is reported pooled, as preregistered, and separately for faults that an
+immediate read-back resolves and faults it cannot. Episodes whose focal write was never attempted are excluded
+from fault-conditional analyses and reported as trigger rates; episodes that end in a gateway error after eight
+attempts are excluded and re-run. Hypotheses, metrics and analyses were preregistered before E1; E2k, E3k, E5, E6,
+the outcome oracle, the stratified decomposition and the revised interval method were added afterwards and are
+exploratory, and every deviation from the preregistration is listed in the released materials.

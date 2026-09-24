@@ -1,0 +1,7 @@
+\paragraph{Documentation.} Removing every statement about read-path lag and consistency from the tool descriptions changes the duplicate rate from 22\% to 34\% (matched episodes, $n=216$); adding an explicit ``not idempotent'' warning to each write changes it from 22\% to 24\% ($n=216$).
+
+\paragraph{Prompt wording.} Two paraphrases of the system prompt yield duplicate rates of 21\% and 22\%, against 22\% for the original on the same episodes.
+
+\paragraph{Unresponsive operator.} When escalation never receives an answer, vanilla agents' duplicate rate is 26\% (vs.\ 28\% with an operator) and the guard's is 34\% (vs.\ 34\%); escalation occurred in 6\% of guard episodes.
+
+\paragraph{Guard ablations.} For \texttt{gemini-3.8-flash}, the E2 model the guard helps most, the full guard's duplicate rate on the ablation episodes is 36\%; removing one component at a time gives: without key 36\%; without consistency 36\%; without block 39\%; without annotate 37\%.

@@ -1,0 +1,23 @@
+\begin{tabular}{lccccccccc}
+\toprule
+Model & vanilla & aware & reflect & sdk-retry & rules & vbr & guard & state oracle & outcome oracle \\
+\midrule
+\multicolumn{10}{l}{\emph{EOS (\%)}} \\
+gpt-6-sol & 79 & 78 & 78 & 51 & 80 & 78 & 76 & 82 & 88 \\
+claude-opus-5.5 & 77 & 77 & 77 & 51 & 77 & 77 & 77 & 82 & 88 \\
+gemini-3.8-flash & 74 & 77 & 71 & 51 & 74 & 73 & 76 & 81 & 88 \\
+\multicolumn{10}{l}{\emph{Duplicate rate (\%)}} \\
+gpt-6-sol & 20 & 22 & 22 & 49 & 20 & 22 & 24 & 18 & 12 \\
+claude-opus-5.5 & 23 & 23 & 23 & 49 & 23 & 23 & 23 & 18 & 12 \\
+gemini-3.8-flash & 26 & 23 & 29 & 49 & 26 & 27 & 24 & 19 & 12 \\
+\multicolumn{10}{l}{\emph{TS (\%)}} \\
+gpt-6-sol & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100 \\
+claude-opus-5.5 & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100 \\
+gemini-3.8-flash & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100 \\
+\midrule
+mean tool calls & 8.5 & 8.6 & 8.2 & 6.3 & 8.1 & 8.4 & 8.4 & 8.4 & 8.5 \\
+mean tokens (k) & 14.2 & 15.9 & 13.9 & 9.6 & 13.3 & 14.2 & 14.1 & 14.2 & 14.2 \\
+mean sim. time (min) & 1.9 & 1.6 & 1.7 & 0.6 & 1.7 & 1.8 & 1.6 & 1.5 & 1.6 \\
+mean human (min) & 0.7 & 0.4 & 0.6 & 0.0 & 0.6 & 0.6 & 0.4 & 0.3 & 0.3 \\
+\bottomrule
+\end{tabular}

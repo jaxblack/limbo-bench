@@ -1,0 +1,108 @@
+\section{Benchmark details}
+\label{app:details}
+
+\subsection{Tools}
+\label{app:tools}
+Table~\ref{tab:tools} lists every tool with the description the agent sees in the native contract and the
+default documentation variant. The \emph{no-consistency-docs} variant (E4) removes the sentences that state
+read-path lags or strong consistency; the \emph{explicit} variant appends a sentence stating that the write is
+not idempotent. The keys-everywhere contract adds an \texttt{idempotency\_key} parameter and one sentence
+describing its semantics to every non-idempotent write.
+
+\begin{table}[h]
+\centering
+\scriptsize
+\caption{Tools and their agent-facing descriptions (native contract).}
+\label{tab:tools}
+\input{generated/tools.tex}
+\end{table}
+
+\subsection{Prompts}
+\label{app:prompts}
+\input{generated/prompts.tex}
+
+\subsection{Task templates}
+\label{app:templates}
+Each template is instantiated with seeded parameters; the list below gives the required effects and the
+focal writes (with idempotency / verification class).
+
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt]\small
+\item \textbf{release\_announcement}: one post on each of two platforms, one COMMS ticket, one email.
+Focal: each publish (key on mastodon / eventual on weibo / strong on linkedin), ticket create (strong), email (eventual, irreversible).
+\item \textbf{invoice\_batch}: one charge per customer (two or three), one email. Focal: each charge (key optional, strong), email.
+\item \textbf{incident\_open}: one OPS ticket, one comment, one email. Focal: ticket create, comment (strong, irreversible), email.
+\item \textbf{migration\_log}: four rows via one batch insert, one audit row. Focal: batch insert (non-atomic), audit insert.
+\item \textbf{deploy\_release}: one staging run, one production run, one comment. Focal: both deployments, comment.
+\item \textbf{refund\_duplicate}: refund one specified charge (never the original), one email. Focal: refund (naturally idempotent), email.
+\item \textbf{feature\_flags}: three upserts, one post. Focal: upsert (idempotent), publish (strong).
+\item \textbf{customer\_notice}: three individual emails, one ticket. Focal: two emails, ticket create.
+\item \textbf{cross\_post}: one post on x (no read-back) and one on mastodon (key), one email. Focal: both publishes.
+\item \textbf{subscription\_upgrade}: one charge, one upsert, one email. Focal: charge, email, upsert.
+\item \textbf{ticket\_resolution}: one comment, one status change, one email. Focal: comment, status (idempotent), email.
+\item \textbf{hotfix\_long}: ticket, two posts, two deployments, comment, audit row, email (about ten writes). Focal: production deploy, weibo publish, email, ticket create.
+\end{itemize}
+
+\section{Additional results}
+\label{app:results}
+
+\begin{table}[h]
+\centering
+\scriptsize
+\caption{Preregistered hypotheses and outcomes. Intervals are 95\% unless stated otherwise.}
+\label{tab:hypotheses}
+\begin{tabular}{p{0.45cm}p{4.9cm}p{5.6cm}p{1.9cm}}
+\toprule
+& Prediction & Result & Verdict \\
+\midrule
+H1 & Non-idempotent writes with an eventual or missing read path are duplicated in $\geq$10\% of committed-fault
+episodes, more often than keyable or strongly verifiable writes &
+mixed-effects OR \HOneOR{} (\HOneLo{}--\HOneHi{}); GEE OR \HOneGeeOR{} (\HOneGeeLo{}--\HOneGeeHi{}), $p=\HOneGeeP$ &
+supported \\
+H2 & The contract explains more variance than the model; the harness explains $\geq$10\% &
+pooled shares: contract \ShareContractOne{}\%, model \ShareModelOne{}\%, harness \ShareHarnessThree{}\% (E3);
+stratified: model \ShareModelOneRes{}\% on resolvable faults, contract \ShareContractOneUnres{}\% on unresolvable ones &
+contract$>$model supported only pooled; harness not supported \\
+H3 & Given verification, eventual read paths yield more duplicates than strong ones &
+\HThreeEventual{}\% vs \HThreeStrong{}\% ($n=\HThreeN$), GEE $p=\HThreeGeeP$ & supported \\
+H4 & Blind re-issue does not differ between irreversible and reversible writes (TOST, $\pm$5\,pp) &
+difference \HFourDiff{}\,pp, 90\% interval \HFourLoNinety{} to \HFourHiNinety{}\,pp & inconclusive \\
+H5 & $\geq$20\% of duplicate-producing episodes end ``completed'' with no uncertainty listed &
+\CompleteNoUncertain{}\% ($n=\NDup$); overclaim \OverclaimGivenDup{}\% (\OverclaimLo{}--\OverclaimHi{}\%) & supported \\
+H6 & The guard in the MCP server brings duplicates to $\leq$2\% in every harness with $\leq$3\,pp TS loss &
+native contract: \EThreeCopilotGuardDSR{}\% (Copilot CLI), \EThreeHermesGuardDSR{}\% (Hermes), \EThreeCodexGuardDSR{}\%
+(Codex CLI) & not supported \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Paired McNemar tests of the guard against each other condition on exactly-once success (E2; pairs share
+model, task instance, focal write and fault mode; Holm-adjusted).}
+\label{tab:mcnemar}
+\input{generated/e2_mcnemar.tex}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{generated/e2_pareto.pdf}
+\caption{Exactly-once success against mean tool calls per episode for each recovery condition and model (E2);
+marker area is proportional to the duplicate rate.}
+\label{fig:pareto}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{generated/behaviour.pdf}
+\caption{Recovery behaviour after the focal timeout, by model (minimal scaffold, vanilla, E1). The
+not-executed and committed panels are observation-equivalent; their behaviour distributions are statistically
+indistinguishable for every model.}
+\label{fig:behaviour}
+\end{figure}
+
+\section{Case studies}
+\label{app:cases}
+The trajectories below are the agent's own tool calls (arguments abbreviated), taken verbatim from E1 traces.
+
+\input{generated/cases.tex}

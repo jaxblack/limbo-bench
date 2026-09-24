@@ -1,0 +1,8 @@
+# Normalize text to LF so that shell scripts run on macOS/Linux after a Windows checkout.
+* text=auto eol=lf
+*.sh        text eol=lf
+
+# Binary outputs.
+*.pdf       binary
+*.png       binary
+*.gz        binary

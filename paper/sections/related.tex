@@ -1,0 +1,47 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Ambiguous tool outcomes.} Three concurrent efforts study agents facing tool calls whose effect is
+unknown. \citet{sun2026didithappen} introduces observation-equivalent counterfactual pairs over 81 software
+engineering templates and compares plain prompting, prompt advice, a status query and a stable idempotency key
+across five model endpoints; eventual consistency and partial commits are explicitly out of scope and no
+mitigation is proposed. IdempotencyBench \citep{gopnalswamy2026idempotencybench} measures idempotency
+violations with a hidden effect ledger under several retry regimes, reporting results for scripted agents.
+\citet{mansoor2026verified} evaluate one model on two tasks under timeouts, delayed visibility and partial
+success, and show that a wrapper combining post-condition verification, idempotency keys and verify-before-retry
+reduces duplicates; the wrapper resolves ambiguity without informing the model. We adopt the counterfactual
+pairing of \citet{sun2026didithappen} as a design principle, reproduce the verify-before-retry wrapper as a
+baseline, and add what these studies leave open: late commits and redelivery, production harnesses, many
+recent models, a contract manipulation, and a belief-visible guard that also escalates.
+
+\paragraph{Tool failures and agent robustness.} Hell or High Water \citep{wang2025hell} evaluates recovery
+when tools become unavailable and alternatives exist; ToolMaze \citep{zhu2026toolmaze} studies replanning under
+explicit and implicit perturbations; ReliabilityBench \citep{gupta2026reliabilitybench} adds timeouts, rate
+limits, partial responses and schema drift; WAREX \citep{kara2026warex} injects web and network faults;
+AgentCheck \citep{mazumder2026agentcheck} and ToolMisuseBench \citep{sigdel2026toolmisuse} provide
+deterministic, replayable fault injection; AgentChaos \citep{tan2026agentchaos} injects faults into LLM API
+responses of multi-agent systems. PALADIN \citep{vuddanti2025paladin} trains recovery from tool failures.
+These works measure task completion under observable failures; none tracks whether a failed write actually
+took effect. Diagnostic studies of long-horizon failures \citep{wang2026horizon,zhu2025agentdebug} and
+self-correction methods \citep{shinn2023reflexion,gou2024critic} likewise score recovery by task success, so a
+duplicate costs nothing.
+
+\paragraph{Transactions, rollback and runtime enforcement.} GoEX \citep{patil2024goex} argues for undo and
+damage confinement in LLM runtimes; SagaLLM \citep{chang2025sagallm}, Atomix \citep{mohammadi2026atomix},
+Cordon \citep{chen2026cordon}, DART \citep{yang2026dart} and Agentic Transaction \citep{sun2026agentictx}
+provide transactional or compensating execution; AgentRewind \citep{zhuang2026agentrewind} checkpoints and
+rewinds agent context and workspace but treats external calls as irreversible and replays them from its log.
+AgentSpec \citep{wang2026agentspec} enforces user-specified rules at runtime. These are mechanisms; we
+measure how often, and where, a mechanism is needed, and how much a minimal contract-level mechanism buys
+across models and harnesses.
+
+\paragraph{Stateful benchmarks and reliability measurement.} $\tau$-bench \citep{yao2025taubench},
+$\tau^2$-bench \citep{barres2025tau2}, AppWorld \citep{trivedi2024appworld}, ToolSandbox \citep{lu2024toolsandbox},
+ToolEmu \citep{ruan2023toolemu}, AgentDojo \citep{debenedetti2024agentdojo} and MCPMark \citep{wu2025mcpmark}
+grade agents against world state, which our grader extends with an effect ledger. \citet{rabanser2026science},
+HAL \citep{kapoor2025hal} and \citet{kapoor2025agents} argue for measuring reliability and cost rather than
+accuracy alone, and \citet{zhu2025abc} give a checklist for rigorous agentic benchmarks that informed our
+validity checks. \citet{tang2026verify} allocate a verification budget across agent actions by downstream harm;
+our setting concerns verification after a failure rather than before an action. A source-code study of eleven
+coding-agent harnesses \citep{barbaste2026harness} documents their architectures; our harness experiments
+measure the resulting behaviour under identical faults.

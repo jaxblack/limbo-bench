@@ -1,0 +1,76 @@
+\section{Recovery under uncertain side effects}
+\label{sec:formulation}
+
+\paragraph{Setting.} An agent issues a write request $r$ to a service. The service may execute $r$ before
+answering, after the client has stopped waiting, partially, more than once, or not at all. We call this
+hidden fact the \emph{outcome state} $s \in \{\textsf{absent}, \textsf{committed}, \textsf{late},
+\textsf{partial}, \textsf{duplicated}\}$. The agent observes only a response $o$ (an acknowledgement, a
+timeout, or an error such as HTTP~500) and whatever it later reads back through the service's query tools.
+Reads may be eventually consistent: a read at time $t$ reflects only effects committed before $t-\lambda$ for
+a lag $\lambda \ge 0$, and some services offer no read-back path at all.
+
+\begin{definition}[Observation equivalence]
+Two outcome states $s, s'$ are \emph{observation-equivalent} for a response $o$ if $P(o \mid s) = P(o \mid s')$
+and every read issued before the effect of $r$ becomes visible returns the same result under $s$ and $s'$.
+\end{definition}
+
+A timeout is observation-equivalent under \textsf{absent}, \textsf{committed} (response lost) and
+\textsf{late} (request still in flight). A recovery policy therefore cannot condition on the outcome state
+directly; it can only gather evidence (by reading, waiting, or asking a human) or choose actions that are
+safe under every equivalent state.
+
+\paragraph{Outcomes.} For a task with required effects $\{e_j\}$, let $x_j$ be the number of committed
+effects matching $e_j$ over the whole episode (including effects later undone) and $\ell_j$ the number still
+standing at the end. The task succeeds (TS) if every $\ell_j$ reaches its required count and no unrelated
+record was damaged; it is \emph{exactly-once successful} (EOS) if, in addition, no $x_j$ exceeds its required
+count. A duplicate side effect is any excess execution, whether or not the agent later compensated for it:
+a refunded double charge was still charged.
+
+\input{sections/fig_timeline.tex}
+
+\paragraph{Why verification is not enough.} The natural recovery strategy---read back, and re-issue only if
+the effect is absent---is exactly-once when the effect of $r$ is visible by the time the agent reads.
+It fails when the request is still in flight.
+
+\begin{proposition}[No verification-only exactly-once under late commits]
+\label{prop:late}
+Consider a non-idempotent write without key support that times out at time $t_0$, and the two worlds
+$W_{\textsf{absent}}$, in which $r$ never executes, and $W_{\textsf{late}}^{\delta}$, in which $r$ executes at
+$t_0+\delta$. Let $\pi$ be any recovery policy whose actions depend only on observations. If $\pi$ completes
+the task in $W_{\textsf{absent}}$ with probability one within time $T$, then for every
+$\delta > T + \lambda$, $\pi$ produces a duplicate in $W_{\textsf{late}}^{\delta}$ with probability one.
+\end{proposition}
+
+\begin{proof}
+In $W_{\textsf{absent}}$ the task can only be completed by re-issuing $r$, which $\pi$ therefore does at
+some time $t_r \le t_0 + T$. Until $t_0+\delta+\lambda$ every read returns the same result in both worlds, so
+for $\delta > T+\lambda$ the observation histories of the two worlds coincide up to $t_r$ and $\pi$ re-issues
+$r$ in $W_{\textsf{late}}^{\delta}$ as well. The in-flight request then commits at $t_0+\delta$ in addition to
+the re-issued one.
+\end{proof}
+
+A known bound $\Delta$ on in-flight processing restores a verification-only solution---wait until
+$t_0+\Delta+\lambda$, then read---at a latency cost of $\Delta+\lambda$ per ambiguous write; few APIs document such
+a bound, none of our tools do, and if the true delay has a heavy tail, any finite assumed bound leaves the mass
+beyond it exposed. Section~\ref{sec:e5} measures this trade-off. Idempotency keys remove the dilemma altogether.
+
+\begin{proposition}[Keys suffice]
+\label{prop:keys}
+If a service executes each idempotency key at most once and returns the original outcome for repeats, and a
+batch interrupted under a key resumes where it stopped, then the policy ``re-issue with the same key until
+acknowledged'' is exactly-once in all five outcome states.
+\end{proposition}
+
+\begin{proof}
+Every execution of $r$, including the in-flight original and any redelivered copy, carries the same key, so
+at most one execution has an effect; re-issuing until an acknowledgement arrives guarantees at least one.
+\end{proof}
+
+Propositions~\ref{prop:late} and~\ref{prop:keys} make the question of this paper concrete and split it in two.
+For faults that an immediate read-back resolves---a lost acknowledgement, a misleading error, a partial
+batch---careful verification by the model suffices, so exactly-once depends on the model and on what the harness
+lets it see. For faults that a read-back cannot resolve---a request still in flight, or a request delivered
+twice---model-side reasoning can at best decline to act (escalate, or report the operation as uncertain); it
+cannot complete the task exactly once on a key-less write. There, exactly-once depends on the contract (does the
+write accept a key?) and on whether someone attaches the key. The rest of the paper measures each factor in each
+regime.

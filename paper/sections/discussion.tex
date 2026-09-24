@@ -1,0 +1,75 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Implications for tool and protocol designers.} The most effective intervention we measured is not a
+better model but a contract that makes repetition harmless. Idempotency keys are a decades-old, cheap remedy,
+yet in our native contract only two of the eleven non-idempotent write paths accept one---a ratio that, if
+anything, flatters many real APIs. Agents use keys when offered; they cannot use keys that do not exist.
+Protocols such as MCP already let a server declare a tool idempotent, but only as an advisory hint
+\citep{mcp2025spec}. Our results argue for three normative additions: a standard idempotency-key argument for
+non-idempotent tools, a declared read-back (status) operation for every write, and documented visibility and
+in-flight bounds. Proposition~\ref{prop:late} shows that the last is not optional: without a bound on in-flight
+time, verification alone cannot be exactly-once. Our data add a practical corollary: a read-back path that cannot
+see lagging or in-flight effects was worse than no read-back path at all, because agents trusted it instead of
+escalating.
+
+\paragraph{Implications for harness builders.} Harness-level retries sit below the model and are invisible to
+it; a transparent retry of a non-idempotent write turns every lost acknowledgement into a duplicate. A harness
+that owns the transport is also the natural place to attach keys for models that do not, to pin one key per
+intent so that a model cannot defeat the key by regenerating it on a retry, to remember writes whose outcome is
+unknown, and to refuse to repeat unverifiable ones---the guard we evaluate is under two hundred lines and needs
+nothing but the tool contract. Such a layer should be careful about what it promises: announcing that it
+will verify before retrying made a strong model abandon escalation in favour of a verification that cannot see
+in-flight requests. Attaching keys silently, or stating uncertainty without claiming to resolve it, avoids this
+complacency. Where a service documents a short bound on in-flight processing, deferring verification until that
+bound has passed is an effective and cheap complement. In our data the harness itself mattered little: three
+production harnesses and a minimal scaffold running the same model behaved almost identically, for better and for
+worse. Harnesses should also surface outcome uncertainty to the model and to the user: in most duplicate-producing
+episodes the final report claimed success, so a human reading it would not know to look.
+
+\paragraph{Implications for model developers and evaluators.} Frontier models have clearly absorbed the
+distributed-systems folklore that a timeout is not a failure, but only when a read-back can settle the question,
+and partly because they were told to act exactly once: without that instruction, faster and weaker models verify
+less and duplicate more. The residual errors are concentrated where the folklore is insufficient---in-flight
+requests, stale read paths, misleading server errors---and in honest reporting. On faults that no read-back can
+resolve, the only correct model-side move is to decline to act on uncertain information: to escalate or to report
+the operation as uncertain. Some models do this; none does it reliably, and a guard that promises verification can
+discourage it. Benchmarks that grade only the final state miss duplicates that were later compensated and cannot
+distinguish a lucky retry from a safe one; observation-equivalent pairs and an effect ledger make both visible.
+
+\paragraph{Limitations.} The services are simulated, although their semantics follow documented production
+conventions and every fault fires at the service boundary rather than in the prompt. All models were reached
+through one gateway, which fixes some settings (for example reasoning effort) at provider defaults, and model
+identifiers refer to versions available in September 2026. We evaluate three harnesses and restrict them to the
+sandbox's tools with a shared preamble, which removes some sources of harness variation by design; harnesses with
+other retry or summarization behaviour may differ. The heavy-tailed in-flight delay distribution is a modelling
+choice: the qualitative conclusion of E5 (that any finite waiting bound leaves the tail exposed) holds for any
+unbounded distribution, but the specific success rates depend on its shape. The simulated operator always answers
+truthfully when available. Our tasks are short to medium in length; long-horizon workflows compound the effects we
+measure but also introduce failure modes we do not study. \texttt{gpt-4.1} is served from a separate low quota and
+its E1 coverage is incomplete (\GptFourOneCoverage{}\%); it is reported per model but excluded from pooled
+statistics. Several analyses (the stratified decomposition, the outcome oracle, E2k, E3k, E5 and E6) were added
+after the preregistration and are exploratory. Finally, the guard is a deliberately simple baseline, not an optimal
+policy; learned or cost-aware verification \citep{tang2026verify} could reduce its latency cost.
+
+\paragraph{Broader impact.} The failure mode studied here causes concrete harm---double charges, repeated
+messages to customers, duplicate deployments. We release a benchmark and adapters that make it measurable, and
+a mitigation that can be deployed without retraining. The benchmark uses only synthetic data and simulated
+services.
+
+\paragraph{Use of AI assistance.} Parts of the benchmark code and of this manuscript were drafted with the
+assistance of an AI coding assistant (GitHub Copilot). We reviewed all content and take full responsibility for it.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We asked where exactly-once behaviour lives for tool-using agents, and the answer depends on the failure. When
+an immediate read-back can reveal what happened, it lives in the model: frontier models verify before they retry
+and solve the textbook lost-acknowledgement case, weaker models are misled more often when a server error hides a
+commit, and an explicit instruction helps. When no
+read-back can---a request still in flight, a request delivered twice---it lives in the tool contract: no amount of
+reasoning completes the task exactly once on a key-less write, waiting for an unknown in-flight bound is costly and
+still incomplete, and client-side middleware is capped by what the contract allows. Offering an idempotency key on
+every write, which agents then use, and harnesses that attach and track keys close most of the remaining gap across
+models and harnesses. Agents rarely report the duplicates they cause. \bench{}, its harness adapters and all
+episode traces are available at \CodeURL{} to support work on agents whose actions are safe to repeat.

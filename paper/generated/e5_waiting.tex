@@ -1,0 +1,23 @@
+\begin{tabular}{lcccccccc}
+\toprule
+ & \multicolumn{3}{c}{fixed delay (90 s)} & \multicolumn{4}{c}{heavy-tailed delay (40 s--2 h)} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-8}
+Condition & EOS (\%) & dup. (\%) & time (min) & EOS (\%) & dup. (\%) & time (min) & $P(\delta\le\Delta)$ \\
+\midrule
+vanilla & 42 & 58 & 3.4 & 36 & 64 & 3.4 & -- \\
+wait 0 s & 41 & 59 & 3.3 & 37 & 63 & 3.2 & 0 \\
+wait 60 s & 47 & 53 & 3.6 & 42 & 58 & 3.2 & 12 \\
+wait 120 s & 100 & 0 & 4.2 & -- & -- & -- & -- \\
+wait 300 s & 100 & 0 & 6.5 & 69 & 31 & 6.5 & 50 \\
+\midrule
+wait 900 s & -- & -- & -- & 73 & 27 & 14.4 & 62 \\
+wait 3600 s & -- & -- & -- & 84 & 16 & 49.7 & 82 \\
+\midrule
+guard & 31 & 69 & 2.3 & 31 & 69 & 2.3 & -- \\
+state oracle & 63 & 37 & 2.0 & -- & -- & -- & -- \\
+outcome oracle & 100 & 0 & 2.5 & 100 & 0 & 20.0 & -- \\
+\midrule
+keys: vanilla & 98 & 2 & 0.8 & 100 & 0 & 0.9 & -- \\
+keys: guard & 100 & 0 & 1.4 & 100 & 0 & 1.4 & -- \\
+\bottomrule
+\end{tabular}

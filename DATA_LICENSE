@@ -1,0 +1,15 @@
+LIMBO episode records, generated tables and figures
+
+The episode records released with LIMBO (the limbo-episodes-*.tar.gz release
+assets) and the generated tables, figures and numbers in paper/generated/ are
+licensed under the Creative Commons Attribution 4.0 International licence
+(CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+
+You may share and adapt them for any purpose, provided that you give
+appropriate credit (see the citation in README.md), provide a link to the
+licence and indicate if changes were made. The records contain synthetic task
+data and the outputs that the evaluated models produced on those tasks.
+
+The TMLR style files in paper/ (tmlr.sty, tmlr.bst, fancyhdr.sty,
+math_commands.tex and template_main.tex) are third-party files redistributed
+under their original licences; they are not covered by LICENSE or by this file.

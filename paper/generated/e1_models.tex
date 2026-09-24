@@ -1,0 +1,15 @@
+\begin{tabular}{lccccc}
+\toprule
+Model & \multicolumn{3}{c}{Duplicate rate (\%) under committed faults} & TS (\%) when & EOS (\%) \\
+ & lost ack / 500 / partial & late commit & redelivery & not executed & all faults \\
+\midrule
+gpt-6-astra & 0 {\scriptsize[0,10]} & 25 {\scriptsize[13,42]} & 74 {\scriptsize[56,86]} & 100 {\scriptsize[91,100]} & 79 {\scriptsize[65,89]} \\
+gpt-6-sol & 0 {\scriptsize[0,10]} & 46 {\scriptsize[30,63]} & 74 {\scriptsize[56,86]} & 99 {\scriptsize[89,100]} & 77 {\scriptsize[63,87]} \\
+gpt-5.6-sol & 1 {\scriptsize[0,11]} & 65 {\scriptsize[48,80]} & 74 {\scriptsize[56,86]} & 98 {\scriptsize[88,100]} & 75 {\scriptsize[61,85]} \\
+claude-opus-5.5 & 0 {\scriptsize[0,10]} & 68 {\scriptsize[50,82]} & 74 {\scriptsize[56,86]} & 100 {\scriptsize[91,100]} & 72 {\scriptsize[57,83]} \\
+gemini-3.8-flash & 14 {\scriptsize[6,29]} & 59 {\scriptsize[42,75]} & 74 {\scriptsize[56,86]} & 100 {\scriptsize[91,100]} & 69 {\scriptsize[54,80]} \\
+grok-4.7 & 11 {\scriptsize[4,25]} & 72 {\scriptsize[55,85]} & 75 {\scriptsize[58,87]} & 100 {\scriptsize[91,100]} & 71 {\scriptsize[57,83]} \\
+gpt-5.4-mini & 21 {\scriptsize[11,37]} & 71 {\scriptsize[53,84]} & 75 {\scriptsize[58,87]} & 100 {\scriptsize[91,100]} & 71 {\scriptsize[56,82]} \\
+gpt-4.1 & 83 {\scriptsize[68,92]} & 84 {\scriptsize[66,93]} & 85 {\scriptsize[68,94]} & 98 {\scriptsize[87,100]} & 51 {\scriptsize[36,65]} \\
+\bottomrule
+\end{tabular}

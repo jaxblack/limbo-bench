@@ -1,0 +1,2192 @@
+{
+ "gpt41_coverage": 0.873,
+ "pooled_exclude": [
+  "gpt-4.1"
+ ],
+ "e1": {
+  "gpt-6-astra": {
+   "dsr_committed": [
+    0.0,
+    0.0,
+    0.0951
+   ],
+   "dsr_late": [
+    0.2464,
+    0.1279,
+    0.4216
+   ],
+   "dsr_redelivery": [
+    0.7391,
+    0.5632,
+    0.8616
+   ],
+   "ts_pre": [
+    1.0,
+    0.9132,
+    1.0
+   ],
+   "eos_all": [
+    0.7949,
+    0.6546,
+    0.888
+   ]
+  },
+  "gpt-6-sol": {
+   "dsr_committed": [
+    0.0,
+    0.0,
+    0.0951
+   ],
+   "dsr_late": [
+    0.4638,
+    0.301,
+    0.6346
+   ],
+   "dsr_redelivery": [
+    0.7391,
+    0.5632,
+    0.8616
+   ],
+   "ts_pre": [
+    0.9855,
+    0.8884,
+    0.9983
+   ],
+   "eos_all": [
+    0.7725,
+    0.63,
+    0.8713
+   ]
+  },
+  "gpt-5.6-sol": {
+   "dsr_committed": [
+    0.0071,
+    0.0004,
+    0.1076
+   ],
+   "dsr_late": [
+    0.6522,
+    0.475,
+    0.7953
+   ],
+   "dsr_redelivery": [
+    0.7391,
+    0.5632,
+    0.8616
+   ],
+   "ts_pre": [
+    0.9783,
+    0.877,
+    0.9965
+   ],
+   "eos_all": [
+    0.75,
+    0.6058,
+    0.8542
+   ]
+  },
+  "claude-opus-5.5": {
+   "dsr_committed": [
+    0.0,
+    0.0,
+    0.0951
+   ],
+   "dsr_late": [
+    0.6812,
+    0.5038,
+    0.818
+   ],
+   "dsr_redelivery": [
+    0.7391,
+    0.5632,
+    0.8616
+   ],
+   "ts_pre": [
+    1.0,
+    0.9132,
+    1.0
+   ],
+   "eos_all": [
+    0.7201,
+    0.5741,
+    0.8307
+   ]
+  },
+  "gemini-3.8-flash": {
+   "dsr_committed": [
+    0.1429,
+    0.0637,
+    0.29
+   ],
+   "dsr_late": [
+    0.5942,
+    0.4192,
+    0.7482
+   ],
+   "dsr_redelivery": [
+    0.7391,
+    0.5632,
+    0.8616
+   ],
+   "ts_pre": [
+    1.0,
+    0.9132,
+    1.0
+   ],
+   "eos_all": [
+    0.6871,
+    0.54,
+    0.8042
+   ]
+  },
+  "grok-4.7": {
+   "dsr_committed": [
+    0.1071,
+    0.0421,
+    0.247
+   ],
+   "dsr_late": [
+    0.7246,
+    0.5481,
+    0.851
+   ],
+   "dsr_redelivery": [
+    0.7536,
+    0.5784,
+    0.8721
+   ],
+   "ts_pre": [
+    1.0,
+    0.9132,
+    1.0
+   ],
+   "eos_all": [
+    0.7141,
+    0.5679,
+    0.826
+   ]
+  },
+  "gpt-5.4-mini": {
+   "dsr_committed": [
+    0.2143,
+    0.112,
+    0.3709
+   ],
+   "dsr_late": [
+    0.7101,
+    0.5332,
+    0.8402
+   ],
+   "dsr_redelivery": [
+    0.7536,
+    0.5784,
+    0.8721
+   ],
+   "ts_pre": [
+    1.0,
+    0.9132,
+    1.0
+   ],
+   "eos_all": [
+    0.7081,
+    0.5616,
+    0.8212
+   ]
+  },
+  "gpt-4.1": {
+   "dsr_committed": [
+    0.8347,
+    0.6752,
+    0.9246
+   ],
+   "dsr_late": [
+    0.8361,
+    0.6594,
+    0.9307
+   ],
+   "dsr_redelivery": [
+    0.8525,
+    0.6783,
+    0.9406
+   ],
+   "ts_pre": [
+    0.9754,
+    0.8703,
+    0.9958
+   ],
+   "eos_all": [
+    0.506,
+    0.3635,
+    0.6475
+   ]
+  }
+ },
+ "e1_n": 6624,
+ "e1_trigger_rate": 1.0,
+ "e1_contract": {
+  "idempotent": [
+   0.0366,
+   0.0179,
+   0.0737,
+   191
+  ],
+  "keyable": [
+   0.0711,
+   0.0499,
+   0.1002,
+   408
+  ],
+  "non-idem/strong": [
+   0.3442,
+   0.316,
+   0.3736,
+   1043
+  ],
+  "non-idem/eventual": [
+   0.4175,
+   0.3756,
+   0.4605,
+   515
+  ],
+  "non-idem/unverifiable": [
+   0.1806,
+   0.135,
+   0.2373,
+   216
+  ]
+ },
+ "e1_contract_frontier": {
+  "idempotent": [
+   0.0,
+   0.0,
+   0.026
+  ],
+  "keyable": [
+   0.0154,
+   0.0066,
+   0.0356
+  ],
+  "non-idem/strong": [
+   0.283,
+   0.2535,
+   0.3145
+  ],
+  "non-idem/eventual": [
+   0.3131,
+   0.2694,
+   0.3604
+  ],
+  "non-idem/unverifiable": [
+   0.1278,
+   0.0867,
+   0.1844
+  ]
+ },
+ "obs_equivalence_first_action_p": {
+  "gpt-6-astra": 1.0,
+  "gpt-6-sol": 0.9979,
+  "gpt-5.6-sol": 0.8416,
+  "claude-opus-5.5": 1.0,
+  "gemini-3.8-flash": 0.9761,
+  "grok-4.7": 0.9995,
+  "gpt-5.4-mini": 1.0,
+  "gpt-4.1": 0.9998
+ },
+ "H3": {
+  "dsr_verified_eventual": 0.0612,
+  "dsr_verified_strong": 0.0017,
+  "p": 0.0,
+  "p_gee": 0.016709077536890084,
+  "n": 853
+ },
+ "H4": {
+  "blind_reversible": 0.0456,
+  "blind_irreversible": 0.0655,
+  "n_rev": 1687,
+  "n_irr": 840,
+  "diff": 0.02787574919329433,
+  "lo90": 0.0056306758521535195,
+  "hi90": 0.050120822534435144,
+  "lo95": 0.0006128224181058059,
+  "hi95": 0.055138675968482855,
+  "p_diff": 0.045852955055268846,
+  "equivalent_5pp": false
+ },
+ "H5": {
+  "overclaim_given_dup": 0.9001,
+  "overclaim_ci": [
+   0.7688,
+   0.9607
+  ],
+  "complete_no_uncertainty_given_dup": 0.8652,
+  "n": 1031
+ },
+ "H1_mixed": {
+  "coef": 1.9104699336675401,
+  "sd": 0.12599790194091917,
+  "or": 6.75626304810256,
+  "or_lo": 5.2778248143819,
+  "or_hi": 8.648845306643992,
+  "n": 2191
+ },
+ "H1_gee": {
+  "or": 2.662101230873311,
+  "or_lo": 1.276385010580572,
+  "or_hi": 5.552229855938004,
+  "p": 0.01364972457995776,
+  "n": 2191
+ },
+ "shapley_e1": {
+  "contract": 0.2515,
+  "mode": 0.4211,
+  "model": 0.0391,
+  "total": 0.7116,
+  "n": 2898,
+  "dsr": 0.3547
+ },
+ "shapley_e1_strata": {
+  "pooled": {
+   "contract": 0.2515,
+   "mode": 0.4211,
+   "model": 0.0391,
+   "total": 0.7116,
+   "n": 2898,
+   "dsr": 0.3547
+  },
+  "resolvable": {
+   "contract": 0.1591,
+   "mode": 0.1601,
+   "model": 0.2446,
+   "total": 0.5638,
+   "n": 1484,
+   "dsr": 0.0782
+  },
+  "unresolvable": {
+   "contract": 0.6222,
+   "mode": 0.0947,
+   "model": 0.0532,
+   "total": 0.7702,
+   "n": 1414,
+   "dsr": 0.645
+  }
+ },
+ "late_wait": {
+  "n": 441,
+  "quick_redo": {
+   "n": 245,
+   "dup": 0.6653,
+   "eventual_share": 0.0082
+  },
+  "waited_redo": {
+   "n": 118,
+   "dup": 1.0,
+   "eventual_share": 0.9915
+  },
+  "no_redo": {
+   "n": 78,
+   "dup": 0.0,
+   "eventual_share": 0.4487
+  }
+ },
+ "frontier": {
+  "timeout_post": 0.0048,
+  "http500_post": 0.0773,
+  "timeout_late": 0.5604,
+  "duplicate_delivery": 0.7415,
+  "partial_timeout": 0.1667
+ },
+ "e2": {
+  "gpt-6-sol": {
+   "vanilla": {
+    "EOS": [
+     0.7902,
+     0.7286,
+     0.8409
+    ],
+    "dsr": [
+     0.2049,
+     0.1548,
+     0.266
+    ],
+    "TS": [
+     0.9951,
+     0.9729,
+     0.9991
+    ]
+   },
+   "aware": {
+    "EOS": [
+     0.7756,
+     0.7129,
+     0.8279
+    ],
+    "dsr": [
+     0.2244,
+     0.1721,
+     0.287
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "reflect": {
+    "EOS": [
+     0.7756,
+     0.7129,
+     0.8279
+    ],
+    "dsr": [
+     0.2244,
+     0.1721,
+     0.287
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "sdk_retry3": {
+    "EOS": [
+     0.5073,
+     0.4385,
+     0.5758
+    ],
+    "dsr": [
+     0.4927,
+     0.4243,
+     0.5614
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "rules": {
+    "EOS": [
+     0.8,
+     0.7391,
+     0.8496
+    ],
+    "dsr": [
+     0.1951,
+     0.1462,
+     0.2555
+    ],
+    "TS": [
+     0.9951,
+     0.9729,
+     0.9991
+    ]
+   },
+   "vbr": {
+    "EOS": [
+     0.7756,
+     0.7129,
+     0.8279
+    ],
+    "dsr": [
+     0.2244,
+     0.1721,
+     0.287
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "guard": {
+    "EOS": [
+     0.761,
+     0.6973,
+     0.8148
+    ],
+    "dsr": [
+     0.239,
+     0.1852,
+     0.3026
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "oracle": {
+    "EOS": [
+     0.8195,
+     0.7603,
+     0.8666
+    ],
+    "dsr": [
+     0.1805,
+     0.1334,
+     0.2396
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "outcome_oracle": {
+    "EOS": [
+     0.878,
+     0.8254,
+     0.9164
+    ],
+    "dsr": [
+     0.122,
+     0.0836,
+     0.1745
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   }
+  },
+  "claude-opus-5.5": {
+   "vanilla": {
+    "EOS": [
+     0.7659,
+     0.7025,
+     0.8192
+    ],
+    "dsr": [
+     0.2341,
+     0.1809,
+     0.2974
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "aware": {
+    "EOS": [
+     0.7659,
+     0.7025,
+     0.8192
+    ],
+    "dsr": [
+     0.2341,
+     0.1809,
+     0.2974
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "reflect": {
+    "EOS": [
+     0.7707,
+     0.7077,
+     0.8236
+    ],
+    "dsr": [
+     0.2293,
+     0.1765,
+     0.2922
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "sdk_retry3": {
+    "EOS": [
+     0.5073,
+     0.4385,
+     0.5758
+    ],
+    "dsr": [
+     0.4927,
+     0.4243,
+     0.5614
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "rules": {
+    "EOS": [
+     0.7659,
+     0.7025,
+     0.8192
+    ],
+    "dsr": [
+     0.2341,
+     0.1809,
+     0.2974
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "vbr": {
+    "EOS": [
+     0.7707,
+     0.7077,
+     0.8236
+    ],
+    "dsr": [
+     0.2293,
+     0.1765,
+     0.2922
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "guard": {
+    "EOS": [
+     0.7707,
+     0.7077,
+     0.8236
+    ],
+    "dsr": [
+     0.2293,
+     0.1765,
+     0.2922
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "oracle": {
+    "EOS": [
+     0.8195,
+     0.7603,
+     0.8666
+    ],
+    "dsr": [
+     0.1805,
+     0.1334,
+     0.2396
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "outcome_oracle": {
+    "EOS": [
+     0.878,
+     0.8254,
+     0.9164
+    ],
+    "dsr": [
+     0.122,
+     0.0836,
+     0.1745
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   }
+  },
+  "gemini-3.8-flash": {
+   "vanilla": {
+    "EOS": [
+     0.7415,
+     0.6766,
+     0.7972
+    ],
+    "dsr": [
+     0.2585,
+     0.2029,
+     0.3233
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "aware": {
+    "EOS": [
+     0.7707,
+     0.7077,
+     0.8236
+    ],
+    "dsr": [
+     0.2293,
+     0.1765,
+     0.2922
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "reflect": {
+    "EOS": [
+     0.7122,
+     0.6459,
+     0.7705
+    ],
+    "dsr": [
+     0.2878,
+     0.2296,
+     0.354
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "sdk_retry3": {
+    "EOS": [
+     0.5073,
+     0.4385,
+     0.5758
+    ],
+    "dsr": [
+     0.4927,
+     0.4243,
+     0.5614
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "rules": {
+    "EOS": [
+     0.7366,
+     0.6715,
+     0.7928
+    ],
+    "dsr": [
+     0.2634,
+     0.2073,
+     0.3284
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "vbr": {
+    "EOS": [
+     0.7268,
+     0.6612,
+     0.7839
+    ],
+    "dsr": [
+     0.2683,
+     0.2117,
+     0.3336
+    ],
+    "TS": [
+     0.9951,
+     0.9729,
+     0.9991
+    ]
+   },
+   "guard": {
+    "EOS": [
+     0.761,
+     0.6973,
+     0.8148
+    ],
+    "dsr": [
+     0.239,
+     0.1852,
+     0.3026
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "oracle": {
+    "EOS": [
+     0.8098,
+     0.7497,
+     0.8581
+    ],
+    "dsr": [
+     0.1902,
+     0.1419,
+     0.2502
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   },
+   "outcome_oracle": {
+    "EOS": [
+     0.878,
+     0.8254,
+     0.9164
+    ],
+    "dsr": [
+     0.122,
+     0.0836,
+     0.1745
+    ],
+    "TS": [
+     1.0,
+     0.9816,
+     1.0
+    ]
+   }
+  },
+  "_cost": {
+   "vanilla": {
+    "n_calls": 8.522,
+    "tokens": 14.236,
+    "agent_s": 1.91,
+    "human_minutes": 0.732
+   },
+   "aware": {
+    "n_calls": 8.649,
+    "tokens": 15.911,
+    "agent_s": 1.601,
+    "human_minutes": 0.39
+   },
+   "reflect": {
+    "n_calls": 8.208,
+    "tokens": 13.926,
+    "agent_s": 1.708,
+    "human_minutes": 0.561
+   },
+   "sdk_retry3": {
+    "n_calls": 6.337,
+    "tokens": 9.614,
+    "agent_s": 0.629,
+    "human_minutes": 0.0
+   },
+   "rules": {
+    "n_calls": 8.081,
+    "tokens": 13.306,
+    "agent_s": 1.698,
+    "human_minutes": 0.585
+   },
+   "vbr": {
+    "n_calls": 8.447,
+    "tokens": 14.161,
+    "agent_s": 1.806,
+    "human_minutes": 0.634
+   },
+   "guard": {
+    "n_calls": 8.408,
+    "tokens": 14.145,
+    "agent_s": 1.592,
+    "human_minutes": 0.39
+   },
+   "oracle": {
+    "n_calls": 8.429,
+    "tokens": 14.18,
+    "agent_s": 1.506,
+    "human_minutes": 0.293
+   },
+   "outcome_oracle": {
+    "n_calls": 8.468,
+    "tokens": 14.202,
+    "agent_s": 1.555,
+    "human_minutes": 0.293
+   }
+  }
+ },
+ "e2_mcnemar_guard_vs": {
+  "sdk_retry3": {
+   "p_holm": 3.28429327576129e-47,
+   "n_pairs": 615,
+   "eos_gain_pp": 25.7
+  },
+  "reflect": {
+   "p_holm": 0.8353424072265625,
+   "n_pairs": 615,
+   "eos_gain_pp": 1.1
+  },
+  "aware": {
+   "p_holm": 1.0,
+   "n_pairs": 615,
+   "eos_gain_pp": -0.7
+  },
+  "vbr": {
+   "p_holm": 1.0,
+   "n_pairs": 615,
+   "eos_gain_pp": 0.7
+  },
+  "rules": {
+   "p_holm": 1.0,
+   "n_pairs": 615,
+   "eos_gain_pp": -0.3
+  },
+  "vanilla": {
+   "p_holm": 1.0,
+   "n_pairs": 615,
+   "eos_gain_pp": -0.2
+  }
+ },
+ "e2_n": 7161,
+ "test_retest": {
+  "n_pairs": 651,
+  "dsr": {
+   "agreement": 0.9816,
+   "kappa": 0.9468,
+   "rate_run1": 0.2258,
+   "rate_run2": 0.2197
+  },
+  "EOS": {
+   "agreement": 0.9785,
+   "kappa": 0.9382,
+   "rate_run1": 0.7727,
+   "rate_run2": 0.7788
+  }
+ },
+ "obs_equivalence": {
+  "per_model": {
+   "gpt-6-astra": {
+    "tvd": 0.0145,
+    "null_mean": 0.0145,
+    "null_95": 0.0145,
+    "p_perm": 1.0,
+    "pairs": 69
+   },
+   "gpt-6-sol": {
+    "tvd": 0.0725,
+    "null_mean": 0.0504,
+    "null_95": 0.1014,
+    "p_perm": 0.3205,
+    "pairs": 69
+   },
+   "gpt-5.6-sol": {
+    "tvd": 0.1304,
+    "null_mean": 0.1007,
+    "null_95": 0.1304,
+    "p_perm": 0.151,
+    "pairs": 69
+   },
+   "claude-opus-5.5": {
+    "tvd": 0.029,
+    "null_mean": 0.029,
+    "null_95": 0.029,
+    "p_perm": 1.0,
+    "pairs": 69
+   },
+   "gemini-3.8-flash": {
+    "tvd": 0.1014,
+    "null_mean": 0.1135,
+    "null_95": 0.1594,
+    "p_perm": 0.748,
+    "pairs": 69
+   },
+   "grok-4.7": {
+    "tvd": 0.087,
+    "null_mean": 0.0897,
+    "null_95": 0.1304,
+    "p_perm": 0.628,
+    "pairs": 69
+   },
+   "gpt-5.4-mini": {
+    "tvd": 0.0435,
+    "null_mean": 0.0858,
+    "null_95": 0.1304,
+    "p_perm": 0.9805,
+    "pairs": 69
+   }
+  },
+  "mean_tvd": 0.0683,
+  "mean_null_tvd": 0.0691,
+  "max_p_perm_min": 0.151,
+  "cross_world_agreement": 0.8922,
+  "same_world_agreement": 0.848,
+  "n_cross": 102,
+  "n_same": 204
+ },
+ "e2k": {
+  "native": {
+   "vanilla": {
+    "timeout_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "http500_post": [
+     0.0784,
+     0.0256,
+     0.2164,
+     102
+    ],
+    "timeout_late": [
+     0.5784,
+     0.4134,
+     0.7276,
+     102
+    ],
+    "partial_timeout": [
+     0.3333,
+     0.0446,
+     0.8427,
+     3
+    ],
+    "duplicate_delivery": [
+     0.7353,
+     0.5694,
+     0.8537,
+     102
+    ]
+   },
+   "guard": {
+    "timeout_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "http500_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "timeout_late": [
+     0.6863,
+     0.5189,
+     0.8161,
+     102
+    ],
+    "partial_timeout": [
+     0.0,
+     0.0,
+     0.6618,
+     3
+    ],
+    "duplicate_delivery": [
+     0.7353,
+     0.5694,
+     0.8537,
+     102
+    ]
+   }
+  },
+  "keys_everywhere": {
+   "vanilla": {
+    "timeout_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "http500_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "timeout_late": [
+     0.0196,
+     0.0026,
+     0.1336,
+     102
+    ],
+    "partial_timeout": [
+     0.0,
+     0.0,
+     0.6618,
+     3
+    ],
+    "duplicate_delivery": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ]
+   },
+   "guard": {
+    "timeout_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "http500_post": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "timeout_late": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ],
+    "partial_timeout": [
+     0.0,
+     0.0,
+     0.6618,
+     3
+    ],
+    "duplicate_delivery": [
+     0.0,
+     0.0,
+     0.1009,
+     102
+    ]
+   }
+  }
+ },
+ "e2k_key_use": {
+  "gpt-6-sol": 1.0,
+  "claude-opus-5.5": 1.0,
+  "gemini-3.8-flash": 1.0
+ },
+ "e5": {
+  "tail_delay_median": 334.05,
+  "tail_delay_max": 5501.3,
+  "n_tail_worlds": 34,
+  "fixed": {
+   "vanilla": {
+    "n": 102,
+    "eos": [
+     0.4216,
+     0.2677,
+     0.5923
+    ],
+    "dsr": [
+     0.5784,
+     0.4077,
+     0.7323
+    ],
+    "ts": 1.0,
+    "latency_min": 3.43,
+    "latency_p90_min": 14.64
+   },
+   "wait0": {
+    "n": 102,
+    "eos": [
+     0.4118,
+     0.2594,
+     0.5831
+    ],
+    "dsr": [
+     0.5882,
+     0.4169,
+     0.7406
+    ],
+    "ts": 1.0,
+    "latency_min": 3.3,
+    "latency_p90_min": 14.48
+   },
+   "wait60": {
+    "n": 102,
+    "eos": [
+     0.4706,
+     0.3099,
+     0.6376
+    ],
+    "dsr": [
+     0.5294,
+     0.3624,
+     0.6901
+    ],
+    "ts": 1.0,
+    "latency_min": 3.57,
+    "latency_p90_min": 6.47
+   },
+   "wait120": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 4.19,
+    "latency_p90_min": 7.39
+   },
+   "wait300": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 6.5,
+    "latency_p90_min": 9.06
+   },
+   "guard": {
+    "n": 102,
+    "eos": [
+     0.3137,
+     0.1802,
+     0.4874
+    ],
+    "dsr": [
+     0.6863,
+     0.5126,
+     0.8198
+    ],
+    "ts": 1.0,
+    "latency_min": 2.28,
+    "latency_p90_min": 3.73
+   },
+   "oracle": {
+    "n": 102,
+    "eos": [
+     0.6275,
+     0.4544,
+     0.773
+    ],
+    "dsr": [
+     0.3725,
+     0.227,
+     0.5456
+    ],
+    "ts": 1.0,
+    "latency_min": 1.98,
+    "latency_p90_min": 3.64
+   },
+   "outcome_oracle": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 2.45,
+    "latency_p90_min": 3.73
+   },
+   "keys:vanilla": {
+    "n": 102,
+    "eos": [
+     0.9804,
+     0.8597,
+     0.9976
+    ],
+    "dsr": [
+     0.0196,
+     0.0024,
+     0.1403
+    ],
+    "ts": 1.0,
+    "latency_min": 0.85,
+    "latency_p90_min": 1.67
+   },
+   "keys:guard": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 1.39,
+    "latency_p90_min": 2.68
+   }
+  },
+  "tail": {
+   "vanilla": {
+    "n": 102,
+    "eos": [
+     0.3627,
+     0.219,
+     0.5361
+    ],
+    "dsr": [
+     0.6373,
+     0.4639,
+     0.781
+    ],
+    "ts": 1.0,
+    "latency_min": 3.37,
+    "latency_p90_min": 14.52
+   },
+   "wait0": {
+    "n": 102,
+    "eos": [
+     0.3725,
+     0.227,
+     0.5456
+    ],
+    "dsr": [
+     0.6275,
+     0.4544,
+     0.773
+    ],
+    "ts": 1.0,
+    "latency_min": 3.18,
+    "latency_p90_min": 5.88,
+    "ceiling": 0.0
+   },
+   "wait60": {
+    "n": 102,
+    "eos": [
+     0.4216,
+     0.2677,
+     0.5923
+    ],
+    "dsr": [
+     0.5784,
+     0.4077,
+     0.7323
+    ],
+    "ts": 1.0,
+    "latency_min": 3.23,
+    "latency_p90_min": 5.23,
+    "ceiling": 0.1176
+   },
+   "wait300": {
+    "n": 102,
+    "eos": [
+     0.6863,
+     0.5126,
+     0.8198
+    ],
+    "dsr": [
+     0.3137,
+     0.1802,
+     0.4874
+    ],
+    "ts": 1.0,
+    "latency_min": 6.46,
+    "latency_p90_min": 9.38,
+    "ceiling": 0.5
+   },
+   "wait900": {
+    "n": 102,
+    "eos": [
+     0.7255,
+     0.5527,
+     0.8497
+    ],
+    "dsr": [
+     0.2745,
+     0.1503,
+     0.4473
+    ],
+    "ts": 1.0,
+    "latency_min": 14.44,
+    "latency_p90_min": 18.02,
+    "ceiling": 0.6176
+   },
+   "wait3600": {
+    "n": 102,
+    "eos": [
+     0.8431,
+     0.6812,
+     0.9311
+    ],
+    "dsr": [
+     0.1569,
+     0.0689,
+     0.3188
+    ],
+    "ts": 1.0,
+    "latency_min": 49.67,
+    "latency_p90_min": 62.08,
+    "ceiling": 0.8235
+   },
+   "guard": {
+    "n": 102,
+    "eos": [
+     0.3137,
+     0.1802,
+     0.4874
+    ],
+    "dsr": [
+     0.6863,
+     0.5126,
+     0.8198
+    ],
+    "ts": 1.0,
+    "latency_min": 2.29,
+    "latency_p90_min": 3.82
+   },
+   "outcome_oracle": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 20.0,
+    "latency_p90_min": 65.96
+   },
+   "keys:vanilla": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 0.87,
+    "latency_p90_min": 1.67
+   },
+   "keys:guard": {
+    "n": 102,
+    "eos": [
+     1.0,
+     0.8922,
+     1.0
+    ],
+    "dsr": [
+     0.0,
+     0.0,
+     0.1078
+    ],
+    "ts": 1.0,
+    "latency_min": 1.42,
+    "latency_p90_min": 2.76
+   }
+  }
+ },
+ "key_stability": {
+  "n": 372,
+  "same": {
+   "n": 358,
+   "dup": 0.0
+  },
+  "no_first": {
+   "n": 14,
+   "dup": 0.1429
+  },
+  "changed": {
+   "n": 0,
+   "dup": null
+  },
+  "share_of_dups_not_reused": 1.0
+ },
+ "e5_n": 1428,
+ "e6": {
+  "n_pairs": 915,
+  "not executed (TS)": {
+   "default": 0.9941,
+   "plain": 1.0,
+   "diff_pp": 0.6,
+   "p": 1.0,
+   "n": 170,
+   "verify_default": 0.7412,
+   "verify_plain": 0.8118
+  },
+  "read-back resolves": {
+   "default": 0.0609,
+   "plain": 0.1478,
+   "diff_pp": 8.7,
+   "p": 1.5366822481155396e-08,
+   "n": 345,
+   "verify_default": 0.8348,
+   "verify_plain": 0.7507
+  },
+  "late commit": {
+   "default": 0.5529,
+   "plain": 0.6824,
+   "diff_pp": 12.9,
+   "p": 2.744048833847046e-05,
+   "n": 170,
+   "verify_default": 0.7765,
+   "verify_plain": 0.8294
+  },
+  "redelivery": {
+   "default": 0.7353,
+   "plain": 0.7412,
+   "diff_pp": 0.6,
+   "p": 1.0,
+   "n": 170,
+   "verify_default": null,
+   "verify_plain": null
+  },
+  "no fault (EOS)": {
+   "default": 1.0,
+   "plain": 1.0,
+   "diff_pp": 0.0,
+   "p": 1.0,
+   "n": 60,
+   "verify_default": null,
+   "verify_plain": null
+  },
+  "resolvable_per_model": {
+   "gpt-6-astra": {
+    "default": 0.0,
+    "plain": 0.0,
+    "n": 69
+   },
+   "gpt-6-sol": {
+    "default": 0.0,
+    "plain": 0.0,
+    "n": 69
+   },
+   "claude-opus-5.5": {
+    "default": 0.0,
+    "plain": 0.0,
+    "n": 69
+   },
+   "gemini-3.8-flash": {
+    "default": 0.1449,
+    "plain": 0.2754,
+    "n": 69
+   },
+   "gpt-5.4-mini": {
+    "default": 0.1594,
+    "plain": 0.4638,
+    "n": 69
+   }
+  },
+  "resolvable_frontier": {
+   "default": 0.0362,
+   "plain": 0.0688,
+   "n": 276,
+   "p": 0.01171875,
+   "models": [
+    "gpt-6-astra",
+    "gpt-6-sol",
+    "claude-opus-5.5",
+    "gemini-3.8-flash"
+   ]
+  },
+  "resolvable_weak": {
+   "default": 0.1594,
+   "plain": 0.4638,
+   "n": 69,
+   "p": 9.5367431640625e-07,
+   "models": [
+    "gpt-5.4-mini"
+   ]
+  }
+ },
+ "e6_summary": "Without the cue, the duplicate rate on faults that a read-back resolves rises from 6\\% to 15\\% ($p=2\\times 10^{-8}$), on late commits from 55\\% to 68\\% ($p=3\\times 10^{-5}$), and on redelivery stays at 74\\% ($p=1.00$). On resolvable faults the change is concentrated in the weaker model, \\texttt{gpt-5.4-mini} (16\\% to 46\\%, $p=1\\times 10^{-6}$); the frontier models move from 4\\% to 7\\% ($p=0.01$). The explicit instruction therefore makes agents more careful, and the duplicate rates we report with it are conservative for instructions that leave exactly-once execution implicit.",
+ "e6_n": 915,
+ "e3": {
+  "minimal": {
+   "gpt-6-sol": {
+    "dsr_committed": 0.0,
+    "dsr_late": 0.375,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7686,
+    "eos_guard": 0.719,
+    "dsr_guard": 0.281,
+    "dsr_native": 0.2231,
+    "ts_native": 0.9917,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "gpt-5.6-sol": {
+    "dsr_committed": 0.0,
+    "dsr_late": 0.6667,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7107,
+    "eos_guard": 0.7273,
+    "dsr_guard": 0.2727,
+    "dsr_native": 0.281,
+    "ts_native": 0.9917,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "claude-opus-5.5": {
+    "dsr_committed": 0.0,
+    "dsr_late": 0.625,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7273,
+    "eos_guard": 0.7273,
+    "dsr_guard": 0.2727,
+    "dsr_native": 0.2727,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "gemini-3.8-flash": {
+    "dsr_committed": 0.1224,
+    "dsr_late": 0.5833,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.686,
+    "eos_guard": 0.7107,
+    "dsr_guard": 0.2893,
+    "dsr_native": 0.314,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   }
+  },
+  "copilot": {
+   "gpt-5.6-sol": {
+    "dsr_committed": 0.0204,
+    "dsr_late": 0.7083,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7025,
+    "eos_guard": 0.7107,
+    "dsr_guard": 0.2893,
+    "dsr_native": 0.2975,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "claude-opus-5.5": {
+    "dsr_committed": 0.0204,
+    "dsr_late": 0.5,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7438,
+    "eos_guard": 0.7273,
+    "dsr_guard": 0.2727,
+    "dsr_native": 0.2562,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "gemini-3.8-flash": {
+    "dsr_committed": 0.0816,
+    "dsr_late": 0.625,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.6942,
+    "eos_guard": 0.7025,
+    "dsr_guard": 0.2975,
+    "dsr_native": 0.3058,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   }
+  },
+  "hermes": {
+   "gpt-5.6-sol": {
+    "dsr_committed": 0.0,
+    "dsr_late": 0.6667,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.719,
+    "eos_guard": 0.7521,
+    "dsr_guard": 0.2479,
+    "dsr_native": 0.281,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "claude-opus-5.5": {
+    "dsr_committed": 0.0,
+    "dsr_late": 0.6667,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.719,
+    "eos_guard": 0.719,
+    "dsr_guard": 0.281,
+    "dsr_native": 0.281,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "gemini-3.8-flash": {
+    "dsr_committed": 0.1633,
+    "dsr_late": 0.5417,
+    "dsr_redelivery": 0.7917,
+    "eos_native": 0.6612,
+    "eos_guard": 0.6942,
+    "dsr_guard": 0.2975,
+    "dsr_native": 0.3306,
+    "ts_native": 0.9917,
+    "ts_guard": 0.9917,
+    "n": 266
+   }
+  },
+  "codex": {
+   "gpt-6-sol": {
+    "dsr_committed": 0.0,
+    "dsr_late": 0.4167,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7686,
+    "eos_guard": 0.719,
+    "dsr_guard": 0.281,
+    "dsr_native": 0.2314,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   },
+   "gpt-5.6-sol": {
+    "dsr_committed": 0.0204,
+    "dsr_late": 0.6667,
+    "dsr_redelivery": 0.75,
+    "eos_native": 0.7107,
+    "eos_guard": 0.7025,
+    "dsr_guard": 0.2975,
+    "dsr_native": 0.2893,
+    "ts_native": 1.0,
+    "ts_guard": 1.0,
+    "n": 266
+   }
+  }
+ },
+ "shapley_e3": {
+  "contract": 0.27,
+  "mode": 0.4929,
+  "model": 0.0103,
+  "harness": 0.001,
+  "total": 0.7741,
+  "n": 1164,
+  "dsr": 0.3497
+ },
+ "shapley_e3_strata": {
+  "pooled": {
+   "contract": 0.27,
+   "mode": 0.4929,
+   "model": 0.0103,
+   "harness": 0.001,
+   "total": 0.7741,
+   "n": 1164,
+   "dsr": 0.3497
+  },
+  "resolvable": {
+   "contract": 0.2262,
+   "mode": 0.0906,
+   "model": 0.213,
+   "harness": 0.0149,
+   "total": 0.5447,
+   "n": 588,
+   "dsr": 0.0357
+  },
+  "unresolvable": {
+   "contract": 0.6729,
+   "mode": 0.0713,
+   "model": 0.0166,
+   "harness": 0.0013,
+   "total": 0.7622,
+   "n": 576,
+   "dsr": 0.6701
+  }
+ },
+ "e3_n": 3968,
+ "e3k": {
+  "minimal": {
+   "native_vanilla_dsr": 0.3505,
+   "native_vanilla_n": 97,
+   "native_guard_dsr": 0.3402,
+   "native_guard_n": 97,
+   "keys_vanilla_dsr": 0.0,
+   "keys_vanilla_n": 97,
+   "keys_guard_dsr": 0.0,
+   "keys_guard_n": 97,
+   "keys_guard_eos": 1.0,
+   "keys_vanilla_keyuse": 1.0
+  },
+  "copilot": {
+   "native_vanilla_dsr": 0.3711,
+   "native_vanilla_n": 97,
+   "native_guard_dsr": 0.3608,
+   "native_guard_n": 97,
+   "keys_vanilla_dsr": 0.0,
+   "keys_vanilla_n": 97,
+   "keys_guard_dsr": 0.0,
+   "keys_guard_n": 97,
+   "keys_guard_eos": 1.0,
+   "keys_vanilla_keyuse": 1.0
+  },
+  "hermes": {
+   "native_vanilla_dsr": 0.3505,
+   "native_vanilla_n": 97,
+   "native_guard_dsr": 0.3093,
+   "native_guard_n": 97,
+   "keys_vanilla_dsr": 0.0,
+   "keys_vanilla_n": 97,
+   "keys_guard_dsr": 0.0,
+   "keys_guard_n": 97,
+   "keys_guard_eos": 1.0,
+   "keys_vanilla_keyuse": 1.0
+  },
+  "codex": {
+   "native_vanilla_dsr": 0.3608,
+   "native_vanilla_n": 97,
+   "native_guard_dsr": 0.3711,
+   "native_guard_n": 97,
+   "keys_vanilla_dsr": 0.0,
+   "keys_vanilla_n": 97,
+   "keys_guard_dsr": 0.0,
+   "keys_guard_n": 97,
+   "keys_guard_eos": 1.0,
+   "keys_vanilla_keyuse": 1.0
+  }
+ },
+ "e4": {
+  "docs_no_consistency_docs": {
+   "variant": {
+    "dsr": 0.338,
+    "eos": 0.662,
+    "ts": 1.0,
+    "escal": 0.1389,
+    "n": 216
+   },
+   "base": {
+    "dsr": 0.2176,
+    "eos": 0.7824,
+    "ts": 1.0,
+    "escal": 0.0602,
+    "n": 216
+   }
+  },
+  "docs_explicit": {
+   "variant": {
+    "dsr": 0.2407,
+    "eos": 0.7593,
+    "ts": 1.0,
+    "escal": 0.0509,
+    "n": 216
+   },
+   "base": {
+    "dsr": 0.2176,
+    "eos": 0.7824,
+    "ts": 1.0,
+    "escal": 0.0602,
+    "n": 216
+   }
+  },
+  "para_1": {
+   "variant": {
+    "dsr": 0.213,
+    "eos": 0.787,
+    "ts": 1.0,
+    "escal": 0.0648,
+    "n": 216
+   },
+   "base": {
+    "dsr": 0.2176,
+    "eos": 0.7824,
+    "ts": 1.0,
+    "escal": 0.0602,
+    "n": 216
+   }
+  },
+  "para_2": {
+   "variant": {
+    "dsr": 0.2222,
+    "eos": 0.7778,
+    "ts": 1.0,
+    "escal": 0.0833,
+    "n": 216
+   },
+   "base": {
+    "dsr": 0.2176,
+    "eos": 0.7824,
+    "ts": 1.0,
+    "escal": 0.0602,
+    "n": 216
+   }
+  },
+  "nohuman_vanilla": {
+   "variant": {
+    "dsr": 0.2569,
+    "eos": 0.7153,
+    "ts": 0.9722,
+    "escal": 0.0764,
+    "n": 144
+   },
+   "base": {
+    "dsr": 0.2847,
+    "eos": 0.7153,
+    "ts": 1.0,
+    "escal": 0.0764,
+    "n": 144
+   }
+  },
+  "nohuman_guard": {
+   "variant": {
+    "dsr": 0.3403,
+    "eos": 0.6319,
+    "ts": 0.9722,
+    "escal": 0.0556,
+    "n": 144
+   },
+   "base": {
+    "dsr": 0.3403,
+    "eos": 0.6597,
+    "ts": 1.0,
+    "escal": 0.0417,
+    "n": 144
+   }
+  },
+  "ablate_guard-no-key": {
+   "variant": {
+    "dsr": 0.3608,
+    "eos": 0.6392,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   },
+   "base": {
+    "dsr": 0.3608,
+    "eos": 0.6392,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   }
+  },
+  "ablate_guard-no-consistency": {
+   "variant": {
+    "dsr": 0.3608,
+    "eos": 0.6392,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   },
+   "base": {
+    "dsr": 0.3608,
+    "eos": 0.6392,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   }
+  },
+  "ablate_guard-no-block": {
+   "variant": {
+    "dsr": 0.3918,
+    "eos": 0.6082,
+    "ts": 1.0,
+    "escal": 0.0,
+    "n": 97
+   },
+   "base": {
+    "dsr": 0.3608,
+    "eos": 0.6392,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   }
+  },
+  "ablate_guard-no-annotate": {
+   "variant": {
+    "dsr": 0.3711,
+    "eos": 0.6289,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   },
+   "base": {
+    "dsr": 0.3608,
+    "eos": 0.6392,
+    "ts": 1.0,
+    "escal": 0.0309,
+    "n": 97
+   }
+  }
+ },
+ "e4_n": 1540,
+ "n_total": 21636,
+ "headline": {
+  "fr_timeout_post": 0.0048,
+  "wk_timeout_post": 0.029,
+  "fr_http500_post": 0.0773,
+  "wk_http500_post": 0.4058,
+  "fr_timeout_late": 0.5604,
+  "wk_timeout_late": 0.7101,
+  "fr_duplicate_delivery": 0.7415,
+  "wk_duplicate_delivery": 0.7536,
+  "fr_partial": 0.1833,
+  "wk_partial": 0.0,
+  "pre_ts": 0.9948,
+  "pre_dsr": 0.0,
+  "explicit_dsr": 0.0017,
+  "none_dsr": 0.0,
+  "fr_c_keyable": 0.0154,
+  "all_c_keyable": 0.0159,
+  "fr_c_idem": 0.0,
+  "all_c_idem": 0.0,
+  "fr_c_strong": 0.283,
+  "all_c_strong": 0.3022,
+  "fr_c_eventual": 0.3131,
+  "all_c_eventual": 0.355,
+  "fr_c_unver": 0.1278,
+  "all_c_unver": 0.1571,
+  "keyable_keyuse_fr": 0.9784,
+  "keyable_keyuse_wk": 0.9815,
+  "fr_c_unver_escalate": 0.8722,
+  "fr_c_unver_verify": 0.0222,
+  "fr_c_strong_escalate": 0.0264,
+  "fr_c_strong_verify": 0.9592,
+  "fr_c_eventual_escalate": 0.0758,
+  "fr_c_eventual_verify": 0.8914,
+  "e2_vanilla_eos": 0.7659,
+  "e2_vanilla_dsr": 0.2325,
+  "e2_vanilla_ts": 0.9984,
+  "e2_vanilla_calls": 8.522,
+  "e2_vanilla_human": 0.7317,
+  "e2_vanilla_minutes": 1.9864,
+  "e2_aware_eos": 0.7707,
+  "e2_aware_dsr": 0.2293,
+  "e2_aware_ts": 1.0,
+  "e2_aware_calls": 8.6488,
+  "e2_aware_human": 0.3902,
+  "e2_aware_minutes": 1.6825,
+  "e2_reflect_eos": 0.7528,
+  "e2_reflect_dsr": 0.2472,
+  "e2_reflect_ts": 1.0,
+  "e2_reflect_calls": 8.2081,
+  "e2_reflect_human": 0.561,
+  "e2_reflect_minutes": 1.7957,
+  "e2_sdk_retry3_eos": 0.5073,
+  "e2_sdk_retry3_dsr": 0.4927,
+  "e2_sdk_retry3_ts": 1.0,
+  "e2_sdk_retry3_calls": 6.3366,
+  "e2_sdk_retry3_human": 0.0,
+  "e2_sdk_retry3_minutes": 0.7679,
+  "e2_rules_eos": 0.7675,
+  "e2_rules_dsr": 0.2309,
+  "e2_rules_ts": 0.9984,
+  "e2_rules_calls": 8.0813,
+  "e2_rules_human": 0.5854,
+  "e2_rules_minutes": 1.7766,
+  "e2_vbr_eos": 0.7577,
+  "e2_vbr_dsr": 0.2407,
+  "e2_vbr_ts": 0.9984,
+  "e2_vbr_calls": 8.4472,
+  "e2_vbr_human": 0.6341,
+  "e2_vbr_minutes": 1.8908,
+  "e2_guard_eos": 0.7642,
+  "e2_guard_dsr": 0.2358,
+  "e2_guard_ts": 1.0,
+  "e2_guard_calls": 8.4081,
+  "e2_guard_human": 0.3902,
+  "e2_guard_minutes": 1.676,
+  "e2_oracle_eos": 0.8163,
+  "e2_oracle_dsr": 0.1837,
+  "e2_oracle_ts": 1.0,
+  "e2_oracle_calls": 8.4293,
+  "e2_oracle_human": 0.2927,
+  "e2_oracle_minutes": 1.5905,
+  "e2_outcome_oracle_eos": 0.878,
+  "e2_outcome_oracle_dsr": 0.122,
+  "e2_outcome_oracle_ts": 1.0,
+  "e2_outcome_oracle_calls": 8.4683,
+  "e2_outcome_oracle_human": 0.2927,
+  "e2_outcome_oracle_minutes": 1.5689,
+  "e2_gpt-6-sol_vanilla_eos": 0.7902,
+  "e2_gpt-6-sol_vanilla_ts": 0.9951,
+  "e2_gpt-6-sol_aware_eos": 0.7756,
+  "e2_gpt-6-sol_aware_ts": 1.0,
+  "e2_gpt-6-sol_guard_eos": 0.761,
+  "e2_gpt-6-sol_guard_ts": 1.0,
+  "e2_gpt-6-sol_oracle_eos": 0.8195,
+  "e2_gpt-6-sol_oracle_ts": 1.0,
+  "e2_gpt-6-sol_sdk_retry3_eos": 0.5073,
+  "e2_gpt-6-sol_sdk_retry3_ts": 1.0,
+  "e2_claude-opus-5.5_vanilla_eos": 0.7659,
+  "e2_claude-opus-5.5_vanilla_ts": 1.0,
+  "e2_claude-opus-5.5_aware_eos": 0.7659,
+  "e2_claude-opus-5.5_aware_ts": 1.0,
+  "e2_claude-opus-5.5_guard_eos": 0.7707,
+  "e2_claude-opus-5.5_guard_ts": 1.0,
+  "e2_claude-opus-5.5_oracle_eos": 0.8195,
+  "e2_claude-opus-5.5_oracle_ts": 1.0,
+  "e2_claude-opus-5.5_sdk_retry3_eos": 0.5073,
+  "e2_claude-opus-5.5_sdk_retry3_ts": 1.0,
+  "e2_gemini-3.8-flash_vanilla_eos": 0.7415,
+  "e2_gemini-3.8-flash_vanilla_ts": 1.0,
+  "e2_gemini-3.8-flash_aware_eos": 0.7707,
+  "e2_gemini-3.8-flash_aware_ts": 1.0,
+  "e2_gemini-3.8-flash_guard_eos": 0.761,
+  "e2_gemini-3.8-flash_guard_ts": 1.0,
+  "e2_gemini-3.8-flash_oracle_eos": 0.8098,
+  "e2_gemini-3.8-flash_oracle_ts": 1.0,
+  "e2_gemini-3.8-flash_sdk_retry3_eos": 0.5073,
+  "e2_gemini-3.8-flash_sdk_retry3_ts": 1.0,
+  "oo_dup_redeliv_share": 1.0,
+  "oo_dup_n": 75.0,
+  "cmp_vanilla_dsr": 0.5,
+  "cmp_vanilla_vretry": 0.5882,
+  "cmp_vanilla_escal": 0.1176,
+  "cmp_guard_dsr": 0.7059,
+  "cmp_guard_vretry": 0.8824,
+  "cmp_guard_escal": 0.0294,
+  "e2k_vanilla_eos": 0.9967,
+  "e2k_vanilla_dsr": 0.0033,
+  "e2k_vanilla_late": 0.0196,
+  "e2k_vanilla_redeliv": 0.0,
+  "e2k_guard_eos": 1.0,
+  "e2k_guard_dsr": 0.0,
+  "e2k_guard_late": 0.0,
+  "e2k_guard_redeliv": 0.0,
+  "e2k_vanilla_keyuse": 1.0,
+  "e2n_vanilla_late": 0.5784,
+  "e2n_vanilla_redeliv": 0.7353,
+  "e2n_guard_late": 0.6863,
+  "e2n_guard_redeliv": 0.7353,
+  "e3_minimal_vanilla_dsr": 0.2727,
+  "e3_minimal_vanilla_eos": 0.7231,
+  "e3_minimal_vanilla_ts": 0.9959,
+  "e3_minimal_guard_dsr": 0.2789,
+  "e3_minimal_guard_eos": 0.7211,
+  "e3_minimal_guard_ts": 1.0,
+  "e3_minimal_tokens_k": 12.0312,
+  "e3_copilot_vanilla_dsr": 0.2865,
+  "e3_copilot_vanilla_eos": 0.7135,
+  "e3_copilot_vanilla_ts": 1.0,
+  "e3_copilot_guard_dsr": 0.2865,
+  "e3_copilot_guard_eos": 0.7135,
+  "e3_copilot_guard_ts": 1.0,
+  "e3_copilot_tokens_k": 0.0,
+  "e3_hermes_vanilla_dsr": 0.2975,
+  "e3_hermes_vanilla_eos": 0.6997,
+  "e3_hermes_vanilla_ts": 0.9972,
+  "e3_hermes_guard_dsr": 0.2755,
+  "e3_hermes_guard_eos": 0.7218,
+  "e3_hermes_guard_ts": 0.9972,
+  "e3_hermes_tokens_k": 0.0,
+  "e3_codex_vanilla_dsr": 0.2603,
+  "e3_codex_vanilla_eos": 0.7397,
+  "e3_codex_vanilla_ts": 1.0,
+  "e3_codex_guard_dsr": 0.2893,
+  "e3_codex_guard_eos": 0.7107,
+  "e3_codex_guard_ts": 1.0,
+  "e3_codex_tokens_k": 153.1812
+ },
+ "guard_summary": "Transparent client-side retries cut exactly-once success from 77\\% to 51\\%. In the native contract even an outcome oracle that sees in-flight requests reaches only 88\\%, because redelivery on key-less writes is beyond any client-side policy; with keys on every write and a guard that attaches them, exactly-once success reaches 100\\%. The same holds in every harness: with keys everywhere, the duplicate rate of a shared model is at most 0\\% even without the guard, and exactly-once success is at least 100\\% with it."
+}

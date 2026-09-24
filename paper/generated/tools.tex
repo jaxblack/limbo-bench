@@ -1,0 +1,30 @@
+\begin{tabular}{llp{9.2cm}}
+\toprule
+Tool & Kind & Description shown to the agent \\
+\midrule
+\texttt{social\_publish} & write & Publish a post to a social platform (mastodon, weibo, linkedin, x). Returns the new post\_id. idempotency\_key is honored by mastodon only; other platforms ignore it. On weibo, newly published posts can take up to 3 minutes to appear in social\_list\_posts. \\
+\texttt{social\_list\_posts} & read & List the most recent posts on a platform (newest first). Not available for x. Weibo listings are eventually consistent (new posts may take up to 3 minutes to appear). \\
+\texttt{social\_delete\_post} & write & Delete a post by id. \\
+\texttt{billing\_create\_charge} & write & Charge a customer's saved payment method. amount\_cents is an integer number of cents. Returns the charge. \\
+\texttt{billing\_list\_charges} & read & List a customer's charges (newest first), including refunded ones. \\
+\texttt{billing\_refund\_charge} & write & Fully refund a charge. Refunding an already-refunded charge returns 409. \\
+\texttt{tickets\_create} & write & Create a ticket in a project. Returns the ticket\_key (e.g. OPS-123). \\
+\texttt{tickets\_search} & read & Full-text search over ticket titles and descriptions. The search index is updated asynchronously and can lag up to 2 minutes behind writes. \\
+\texttt{tickets\_list\_recent} & read & List the most recently created tickets in a project (newest first). Strongly consistent. \\
+\texttt{tickets\_get} & read & Get a ticket, including its description and comments. \\
+\texttt{tickets\_add\_comment} & write & Add a comment to a ticket. \\
+\texttt{tickets\_update\_status} & write & Change a ticket's status (open, in\_progress, resolved, closed). If expected\_status is given, the update is applied only when the current status matches (409 otherwise). Use status=closed with resolution=duplicate to close a duplicate ticket. \\
+\texttt{mail\_send} & write & Send an email. Sent messages cannot be recalled. Returns the message\_id. \\
+\texttt{mail\_search\_sent} & read & Search the Sent folder by subject, recipient or body text (newest first). The Sent folder syncs asynchronously; a sent message can take up to 2 minutes to appear. \\
+\texttt{db\_insert} & write & Insert one row into a table. Each call inserts a new row with a new row\_id. \\
+\texttt{db\_insert\_many} & write & Insert several rows into a table in order. Rows are inserted one at a time; if the request fails midway, rows inserted before the failure remain. \\
+\texttt{db\_upsert} & write & Insert a row, or update the existing row whose key\_field value matches. \\
+\texttt{db\_query} & read & Query rows of a table by exact column values. Strongly consistent. \\
+\texttt{db\_delete} & write & Delete a row by row\_id. \\
+\texttt{deploy\_trigger} & write & Start a deployment run of a service version to an environment (staging or production). Runs go queued -> running -> succeeded (about 1 minute). \\
+\texttt{deploy\_list\_runs} & read & List recent deployment runs of a service (newest first). Strongly consistent. \\
+\texttt{deploy\_get\_run} & read & Get the status of a deployment run. \\
+\texttt{deploy\_cancel\_run} & write & Cancel a queued or running deployment run. \\
+\texttt{wait} & read & Wait for a number of seconds (max 900) before continuing. \\
+\bottomrule
+\end{tabular}

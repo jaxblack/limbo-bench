@@ -1,0 +1,22 @@
+\begin{tabular}{llcccccc}
+\toprule
+Harness & Model & \multicolumn{3}{c}{Duplicate rate (\%), native} & EOS (\%) native & EOS (\%) guard & n \\
+ & & committed & late & redelivery & & & \\
+\midrule
+minimal & gpt-6-sol & 0 {\scriptsize[0,7]} & 38 {\scriptsize[21,57]} & 75 {\scriptsize[55,88]} & 77 {\scriptsize[69,83]} & 72 {\scriptsize[63,79]} & 266 \\
+minimal & gpt-5.6-sol & 0 {\scriptsize[0,7]} & 67 {\scriptsize[47,82]} & 75 {\scriptsize[55,88]} & 71 {\scriptsize[62,78]} & 73 {\scriptsize[64,80]} & 266 \\
+minimal & claude-opus-5.5 & 0 {\scriptsize[0,7]} & 62 {\scriptsize[43,79]} & 75 {\scriptsize[55,88]} & 73 {\scriptsize[64,80]} & 73 {\scriptsize[64,80]} & 266 \\
+minimal & gemini-3.8-flash & 12 {\scriptsize[6,24]} & 58 {\scriptsize[39,76]} & 75 {\scriptsize[55,88]} & 69 {\scriptsize[60,76]} & 71 {\scriptsize[62,78]} & 266 \\
+\midrule
+copilot & gpt-5.6-sol & 2 {\scriptsize[0,11]} & 71 {\scriptsize[51,85]} & 75 {\scriptsize[55,88]} & 70 {\scriptsize[62,78]} & 71 {\scriptsize[62,78]} & 266 \\
+copilot & claude-opus-5.5 & 2 {\scriptsize[0,11]} & 50 {\scriptsize[31,69]} & 75 {\scriptsize[55,88]} & 74 {\scriptsize[66,81]} & 73 {\scriptsize[64,80]} & 266 \\
+copilot & gemini-3.8-flash & 8 {\scriptsize[3,19]} & 62 {\scriptsize[43,79]} & 75 {\scriptsize[55,88]} & 69 {\scriptsize[61,77]} & 70 {\scriptsize[62,78]} & 266 \\
+\midrule
+hermes & gpt-5.6-sol & 0 {\scriptsize[0,7]} & 67 {\scriptsize[47,82]} & 75 {\scriptsize[55,88]} & 72 {\scriptsize[63,79]} & 75 {\scriptsize[67,82]} & 266 \\
+hermes & claude-opus-5.5 & 0 {\scriptsize[0,7]} & 67 {\scriptsize[47,82]} & 75 {\scriptsize[55,88]} & 72 {\scriptsize[63,79]} & 72 {\scriptsize[63,79]} & 266 \\
+hermes & gemini-3.8-flash & 16 {\scriptsize[9,29]} & 54 {\scriptsize[35,72]} & 79 {\scriptsize[60,91]} & 66 {\scriptsize[57,74]} & 69 {\scriptsize[61,77]} & 266 \\
+\midrule
+codex & gpt-6-sol & 0 {\scriptsize[0,7]} & 42 {\scriptsize[24,61]} & 75 {\scriptsize[55,88]} & 77 {\scriptsize[69,83]} & 72 {\scriptsize[63,79]} & 266 \\
+codex & gpt-5.6-sol & 2 {\scriptsize[0,11]} & 67 {\scriptsize[47,82]} & 75 {\scriptsize[55,88]} & 71 {\scriptsize[62,78]} & 70 {\scriptsize[62,78]} & 266 \\
+\bottomrule
+\end{tabular}

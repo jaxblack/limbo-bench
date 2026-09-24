@@ -1,0 +1,52 @@
+\documentclass[10pt]{article}
+\usepackage{tmlr}
+% \usepackage[preprint]{tmlr}  % de-anonymized version for arXiv
+
+\input{math_commands.tex}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+
+\input{generated/numbers.tex}
+
+\title{Where Does Exactly-Once Live?\\ Model, Harness, and Tool-Contract Effects\\ on Duplicate Side Effects in LLM Agents}
+
+\author{\name Anonymous authors \\ \addr Paper under double-blind review}
+
+\newcommand{\bench}{\textsc{Limbo}}
+% Code and data release. make_arxiv.py substitutes the public repository for the de-anonymized version.
+\newcommand{\CodeURL}{(link withheld for anonymous review)}
+\newcommand{\CodeCite}{}
+\def\month{MM}
+\def\year{YYYY}
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract.tex}
+\input{sections/intro.tex}
+\input{sections/related.tex}
+\input{sections/formulation.tex}
+\input{sections/benchmark.tex}
+\input{sections/setup.tex}
+\input{sections/results.tex}
+\input{sections/discussion.tex}
+
+\bibliography{references}
+\bibliographystyle{tmlr}
+
+\appendix
+\input{sections/appendix.tex}
+
+\end{document}

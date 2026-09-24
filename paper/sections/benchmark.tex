@@ -1,0 +1,126 @@
+\section{The \bench{} benchmark}
+\label{sec:benchmark}
+
+\bench{} is a deterministic, resettable sandbox of six simulated services, twelve parameterized task
+templates, a fault injector that operates at the service boundary, and a grader that reads only the
+ground-truth effect ledger. Table~\ref{tab:services} summarizes the services.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Services and tool contracts. ``Key'' marks writes that accept an idempotency key in the native
+contract; lags are documented in the tool descriptions.}
+\label{tab:services}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Service & Writes (idempotency) & Read-back path (consistency) \\
+\midrule
+social & \texttt{publish} (key on mastodon only) & \texttt{list\_posts}: weibo lags 180\,s; none for x \\
+billing & \texttt{create\_charge} (key), \texttt{refund} (naturally idempotent) & \texttt{list\_charges} (strong) \\
+tickets & \texttt{create}, \texttt{add\_comment} (non-idempotent), \texttt{update\_status} (conditional) & \texttt{list\_recent} (strong), \texttt{search} (lags 120\,s) \\
+mail & \texttt{send} (non-idempotent, irreversible) & \texttt{search\_sent} (lags 120\,s) \\
+data & \texttt{insert}, \texttt{insert\_many} (non-atomic), \texttt{upsert} (idempotent) & \texttt{query} (strong) \\
+deploy & \texttt{trigger} (non-idempotent) & \texttt{list\_runs}, \texttt{get\_run} (strong) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Services and contracts.} Semantics follow well-known production conventions. Billing keys follow
+Stripe: a repeated key with the same parameters replays the original charge and a repeated key with different
+parameters is rejected \citep{stripe_idempotent}. Social posts, tickets, emails, database rows and deployment
+runs are created anew by every successful call unless a key is honored. Several read paths are eventually
+consistent with a documented lag (a search index, a mail Sent folder, one social platform's listing), and
+one platform has no listing endpoint, so its writes cannot be verified. Search endpoints behave like search
+engines: a record matches when every query term occurs in its fields. Three general tools complete the
+interface: \texttt{wait} advances a virtual clock; \texttt{escalate\_to\_human} reaches a simulated on-call
+operator who inspects the ground truth of every write that returned an error and answers after 15 simulated
+minutes (or, in one condition, never answers); and \texttt{finish} records a structured final report with a
+status and a list of operations whose outcome the agent considers uncertain. Every tool additionally
+carries a machine-readable contract in the style of MCP tool annotations \citep{mcp2025spec}: read-only,
+idempotent and destructive hints, the fields that identify a write's intent, a read-back function, the
+documented visibility lag and a compensating action. The agent never sees the contract object; only the
+harness-level recovery policies in \S\ref{sec:setup} may read it.
+
+\paragraph{Tasks.} Twelve templates describe realistic operational workflows: announcing a release on two
+platforms, opening a ticket with the post links and emailing a summary; billing two or three customers for an
+invoice and notifying finance; opening an incident and paging on-call; recording a batch of database
+migrations; rolling out a service to staging and then production; refunding a duplicate charge while
+keeping the original; enabling feature flags and announcing them; notifying three customers individually;
+cross-posting an event; upgrading a subscription; resolving an incident ticket; and a long-horizon hotfix
+rollout with about ten writes across five services. Each template is instantiated with seeded parameters
+(products, versions, customers, amounts) and states its targets precisely (for example, \emph{exactly one}
+post containing the release version on each named platform). Each instruction ends with one sentence asking for
+every action to happen exactly once; E6 removes it to measure how much this cue drives caution. Each template also
+declares its \emph{focal
+writes}---the calls a fault may attach to---annotated with idempotency class (non-idempotent, key optional,
+naturally idempotent, idempotent), verification class (strong, eventual, none) and reversibility. Across
+templates there are 34--35 focal writes per instance.
+
+\paragraph{Fault injection.} A fault is attached to the $n$-th call that matches a focal write's tool and
+argument filter, so the same world and the same fault apply to every model, harness and condition. Table
+\ref{tab:faults} lists the twelve modes. The observable response of each ambiguous mode is byte-identical
+across its hidden outcome states, and the virtual clock advances identically, so a pair such as
+\texttt{timeout\_pre}/\texttt{timeout\_post} differs only in whether the service committed. A request that
+the service would reject anyway receives its real error and leaves the trigger armed for the next matching
+call; this keeps the pairs symmetric even when an agent's first attempt is malformed. Late commits land
+90 simulated seconds after the request was sent (\texttt{timeout\_late}) or after a delay drawn log-uniformly
+between 40\,s and 2\,h (\texttt{timeout\_late\_tail}, median about 9 minutes), whatever the agent does in the
+meantime; the delay is drawn deterministically per world, so every model and policy faces the same one. At the end
+of an episode, requests still in flight complete, as they would in reality.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Fault modes. Rows in the same group are observation-equivalent at the time of the response.}
+\label{tab:faults}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llll}
+\toprule
+Mode & Agent observes & Hidden outcome & Exactly-once recovery \\
+\midrule
+\texttt{timeout\_pre} & timeout & not executed & verify, then re-issue \\
+\texttt{timeout\_post} & timeout & executed, response lost & verify, then skip \\
+\texttt{timeout\_late} & timeout & executed 90\,s later (still in flight) & same key, or wait and escalate \\
+\texttt{timeout\_late\_tail} & timeout & executed 40\,s--2\,h later (heavy tail) & same key \\
+\midrule
+\texttt{http500\_pre} & HTTP 500 & not executed & verify, then re-issue \\
+\texttt{http500\_post} & HTTP 500 & executed & verify, then skip \\
+\midrule
+\texttt{partial\_timeout} & timeout on a batch & first half executed & verify, re-issue only missing rows \\
+\texttt{duplicate\_delivery} & success & executed twice & send a key proactively \\
+\midrule
+\texttt{http503\_transient} & 503, retry later & not executed & retry \\
+\texttt{rate\_limit} & 429 with retry-after & not executed & wait, then retry \\
+\texttt{outage} & persistent 503 & not executed & stop and report \\
+\texttt{schema\_drift} & 400, field renamed & not executed & repair arguments \\
+\texttt{none} & success & executed & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Grading.} The grader reads the ledger of committed effects and the final world state; no model is
+used as a judge. It reports task success (TS), exactly-once success (EOS), the number of duplicate
+executions (including compensated ones), residual duplicates, collateral damage to records the task did not
+target (for example refunding the original charge), unrequested writes, and \emph{overclaim}: finishing
+with status \texttt{completed} although the task failed or a duplicate remains. From the agent's own tool
+calls---not the harness's---a deterministic coder classifies the recovery behaviour that follows the focal
+fault as blind retry, retry with the same key, retry with a new key, verify then retry, verify then skip,
+escalate, stop without checking, or move on.
+
+\paragraph{Validity checks.} Thirty-one unit tests with scripted agents check the fault semantics exactly:
+observation equivalence of each pair, symmetric handling of invalid requests, stale reads before and fresh
+reads after the documented lag, partial batches, key replay, conflict and batch resumption, late commits
+defeating verification but not keys, the heavy-tailed delay distribution, the waiting thresholds of the
+wait-then-verify policies, redelivery, escalation reporting ground truth, and the grader's detection of
+collateral damage and overclaiming. Scripted reference policies behave as the propositions predict: a
+blind-retry agent duplicates only in committed worlds, a verify-first agent is exactly-once except under late
+commits, and a same-key agent is exactly-once everywhere. In the empirical data, agents cannot distinguish the
+observation-equivalent worlds (\S\ref{sec:results}), confirming that no information about the hidden outcome
+leaks through the response.
+
+\paragraph{Harness-agnostic deployment.} The sandbox runs as a local HTTP service owned by the experiment
+runner. A stdio MCP server forwards only \texttt{tools/list} and \texttt{tools/call} to it, so any
+MCP-capable agent can be evaluated unchanged; the fault plan and the ground truth never leave the runner.
+Each harness episode runs in an empty working directory with a throwaway harness home, so memory and session
+state cannot carry over between episodes.
