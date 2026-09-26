@@ -17,6 +17,6 @@ verification-only policy is exactly-once under late commits without a bound on i
 such a bound is short and known, but with heavy-tailed in-flight delays even an hour of waiting per episode falls
 short of offering an idempotency key on every write, which lowers the duplicate rate from \ETwoVanillaDSR{}\% to
 \EKeysVanillaDSR{}\% because agents use keys when they exist. The harness barely matters, a guard that attaches keys
-transfers across harnesses unchanged, and agents reported success in \OverclaimGivenDup{}\% of the episodes in which
-they had duplicated an effect.
+transfers across harnesses unchanged, and agents reported completion in \CompletedGivenDup{}\% of the episodes in
+which they had duplicated an effect.
 \end{abstract}

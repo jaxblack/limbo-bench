@@ -115,7 +115,8 @@ defeating verification but not keys, the heavy-tailed delay distribution, the wa
 wait-then-verify policies, redelivery, escalation reporting ground truth, and the grader's detection of
 collateral damage and overclaiming. Scripted reference policies behave as the propositions predict: a
 blind-retry agent duplicates only in committed worlds, a verify-first agent is exactly-once except under late
-commits, and a same-key agent is exactly-once everywhere. In the empirical data, agents cannot distinguish the
+commits, and a same-key agent is exactly-once under the transient faults and resumable-key contract tested here.
+In the empirical data, agents cannot distinguish the
 observation-equivalent worlds (\S\ref{sec:results}), confirming that no information about the hidden outcome
 leaks through the response.
 

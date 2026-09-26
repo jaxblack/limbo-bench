@@ -48,7 +48,7 @@ Focal: each publish (key on mastodon / eventual on weibo / strong on linkedin), 
 \begin{table}[h]
 \centering
 \scriptsize
-\caption{Preregistered hypotheses and outcomes. Intervals are 95\% unless stated otherwise.}
+\caption{Internally prespecified hypotheses and outcomes. Intervals are 95\% unless stated otherwise.}
 \label{tab:hypotheses}
 \begin{tabular}{p{0.45cm}p{4.9cm}p{5.6cm}p{1.9cm}}
 \toprule
@@ -67,7 +67,8 @@ H3 & Given verification, eventual read paths yield more duplicates than strong o
 H4 & Blind re-issue does not differ between irreversible and reversible writes (TOST, $\pm$5\,pp) &
 difference \HFourDiff{}\,pp, 90\% interval \HFourLoNinety{} to \HFourHiNinety{}\,pp & inconclusive \\
 H5 & $\geq$20\% of duplicate-producing episodes end ``completed'' with no uncertainty listed &
-\CompleteNoUncertain{}\% ($n=\NDup$); overclaim \OverclaimGivenDup{}\% (\OverclaimLo{}--\OverclaimHi{}\%) & supported \\
+\CompleteNoUncertain{}\% (\CompleteNoUncertainLo{}--\CompleteNoUncertainHi{}; $n=\NDup$);
+overclaim \OverclaimGivenDup{}\% (\OverclaimLo{}--\OverclaimHi{}); completed \CompletedGivenDup{}\% & supported \\
 H6 & The guard in the MCP server brings duplicates to $\leq$2\% in every harness with $\leq$3\,pp TS loss &
 native contract: \EThreeCopilotGuardDSR{}\% (Copilot CLI), \EThreeHermesGuardDSR{}\% (Hermes), \EThreeCodexGuardDSR{}\%
 (Codex CLI) & not supported \\

@@ -9,11 +9,15 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable
 
 import numpy as np
 import pandas as pd
+
+from .runtime import _arg_matches
+from .services import build_tools
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 RESULTS = Path(__file__).resolve().parents[1] / "results"
@@ -42,6 +46,29 @@ def load(experiments: Iterable[str]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+@lru_cache(maxsize=2)
+def _tools(contract: str):
+    return build_tools(contract)
+
+
+def focal_first_key_used(record: dict) -> bool | None:
+    """Model-supplied key on the first matching focal write, when the tool supports one."""
+    focal = record.get("focal") or {}
+    name = focal.get("tool")
+    tool = _tools((record.get("spec") or {}).get("contract", "native")).get(name) if name else None
+    if tool is None:
+        return None
+    for call in record.get("agent_calls") or []:
+        args = call.get("args")
+        if call.get("name") != name or not isinstance(args, dict) or not _arg_matches(args, focal.get("match") or {}):
+            continue
+        if not tool.contract.supports_key(args):
+            return None
+        key = args.get("idempotency_key")
+        return isinstance(key, str) and bool(key)
+    return None
+
+
 def flatten(r: dict) -> dict:
     s, g, b, f = r.get("spec", {}), r.get("grade") or {}, r.get("behavior") or {}, r.get("focal") or {}
     u = r.get("usage") or {}
@@ -63,8 +90,7 @@ def flatten(r: dict) -> dict:
         "first_action": b.get("first_action"),
         "escalated_b": b.get("escalated"), "redo_intents": b.get("redo_intents", 0),
         "overclaim": r.get("overclaim"), "claimed_complete": r.get("claimed_complete"),
-        "key_used": any(isinstance(c.get("args"), dict) and c["args"].get("idempotency_key")
-                        for c in (r.get("agent_calls") or [])),
+        "key_used": focal_first_key_used(r),
         "uncertain_reported": r.get("uncertain_reported"), "escalations": r.get("escalations", 0),
         "human_minutes": r.get("human_minutes", 0.0), "virtual_s": r.get("virtual_seconds", 0.0),
         # Agent-visible completion time: excludes the end-of-episode settling of in-flight requests.
@@ -200,12 +226,21 @@ def mcfadden_r2(df: pd.DataFrame, y: str, factors: list[str]) -> float:
         return 0.0
     X = pd.get_dummies(df[factors].astype(str), drop_first=True).astype(float)
     X = sm.add_constant(X, has_constant="add")
-    try:
-        res = sm.Logit(yv, X).fit_regularized(alpha=1e-4, disp=0, maxiter=500)
-        ll = float(res.llf) if np.isfinite(res.llf) else ll0
-    except Exception:
-        return float("nan")
-    return max(0.0, 1.0 - ll / ll0)
+    model = sm.GLM(yv, X, family=sm.families.Binomial())
+    penalty = np.full(X.shape[1], 1e-7)
+    penalty[0] = 0.0
+    fit = model.fit_regularized(alpha=penalty, L1_wt=0, maxiter=2000, cnvrg_tol=1e-10)
+    params = np.asarray(fit.params)
+    score_residual = np.asarray(model.score(params)) / len(yv) - penalty * params
+    if not np.all(np.isfinite(score_residual)) or np.max(np.abs(score_residual)) > 1e-4:
+        raise ValueError(f"ridge logit did not converge for factors {factors}")
+    ll = float(model.loglike(params))
+    if not np.isfinite(ll):
+        raise ValueError(f"non-finite pseudo-R² likelihood for factors {factors}")
+    r2 = 1.0 - ll / ll0
+    if r2 < -1e-6:
+        raise ValueError(f"negative pseudo-R² for factors {factors}: {r2}")
+    return max(0.0, r2)
 
 
 def shapley_r2(df: pd.DataFrame, y: str, factors: list[str]) -> dict[str, float]:

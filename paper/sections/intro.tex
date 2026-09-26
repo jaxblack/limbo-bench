@@ -45,21 +45,22 @@ episodes), because they verify before retrying; a server error that hides a comm
 for frontier models, \WeakHttpPostDSR{}\% for the weaker \WeakList{}), and without the
 explicit instruction the weaker and faster models duplicate markedly more while the strongest are unaffected.
 On these faults the model explains \ShareModelOneRes{}\% of the explained variance in duplicates.
-\item \textbf{When it cannot, only the contract does.} When the timed-out request is still in flight, the
+\item \textbf{When it cannot, the contract dominates low-latency recovery.} When the timed-out request is still in flight, the
 same verification finds nothing and the retry creates a duplicate in \FrontierLateDSR{}\% of frontier
 episodes; under redelivery, in \FrontierRedelivDSR{}\%. Here the contract explains \ShareContractOneUnres{}\% of
 the variance. We prove that no verification-only policy can be exactly-once under late commits without a known
 bound on in-flight time, and measure the price of waiting for such a bound: waiting works when the bound is short
 and known, but with heavy-tailed in-flight delays even an hour of waiting per episode falls short of what keys
-achieve with no added latency. Offering keys is enough: under a counterfactual contract in which every write accepts
-one, agents attach them in \EKeysVanillaKeyUse{}\% of episodes and the duplicate rate falls from \ETwoVanillaDSR{}\%
+achieve with no added latency. Keys give at-most-once safety, not unconditional task completion: under our
+counterfactual contract in which every non-idempotent write accepts one, agents attach them to
+\EKeysVanillaKeyUse{}\% of eligible first writes and the duplicate rate falls from \ETwoVanillaDSR{}\%
 to \EKeysVanillaDSR{}\% with no other change; every remaining duplicate involves an agent that sent the first attempt
 without a key.
 \item \textbf{Harnesses matter little; client-side middleware has a ceiling.} Three production harnesses and a
 minimal scaffold running the same model behave almost identically. \GuardSummary{}
-\item \textbf{Agents do not know when they have duplicated.} In \OverclaimGivenDup{}\% of episodes that
+\item \textbf{Agents do not know when they have duplicated.} In \CompletedGivenDup{}\% of episodes that
 produced a duplicate, the agent reported the task as completed.
 \end{itemize}
 
-We release the benchmark, the harness adapters and every episode trace\CodeCite.\footnote{Code (MIT licence) and
+We release the benchmark, the harness adapters and every analysed episode trace\CodeCite.\footnote{Code (MIT licence) and
 data (CC BY 4.0): \CodeURL.}

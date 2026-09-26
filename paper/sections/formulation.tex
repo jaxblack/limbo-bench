@@ -36,7 +36,10 @@ It fails when the request is still in flight.
 \label{prop:late}
 Consider a non-idempotent write without key support that times out at time $t_0$, and the two worlds
 $W_{\textsf{absent}}$, in which $r$ never executes, and $W_{\textsf{late}}^{\delta}$, in which $r$ executes at
-$t_0+\delta$. Let $\pi$ be any recovery policy whose actions depend only on observations. If $\pi$ completes
+$t_0+\delta$. Assume the client has no privileged status query, operator who can inspect server state, safe
+alternative write, or way to cancel the in-flight request; completion in the absent world requires re-issuing
+this non-idempotent write. Let $\pi$ be a recovery policy whose actions depend only on its own responses and
+reads. If $\pi$ completes
 the task in $W_{\textsf{absent}}$ with probability one within time $T$, then for every
 $\delta > T + \lambda$, $\pi$ produces a duplicate in $W_{\textsf{late}}^{\delta}$ with probability one.
 \end{proposition}
@@ -52,25 +55,35 @@ the re-issued one.
 A known bound $\Delta$ on in-flight processing restores a verification-only solution---wait until
 $t_0+\Delta+\lambda$, then read---at a latency cost of $\Delta+\lambda$ per ambiguous write; few APIs document such
 a bound, none of our tools do, and if the true delay has a heavy tail, any finite assumed bound leaves the mass
-beyond it exposed. Section~\ref{sec:e5} measures this trade-off. Idempotency keys remove the dilemma altogether.
+beyond it exposed. Section~\ref{sec:e5} measures this trade-off. Idempotency keys prevent duplicate effects on
+retries, but do not by themselves guarantee that a client can learn whether the write succeeded.
 
-\begin{proposition}[Keys suffice]
+\begin{proposition}[Stable-key safety and conditional completion]
 \label{prop:keys}
-If a service executes each idempotency key at most once and returns the original outcome for repeats, and a
-batch interrupted under a key resumes where it stopped, then the policy ``re-issue with the same key until
-acknowledged'' is exactly-once in all five outcome states.
+Suppose a service binds a key to one logical write and never repeats any effect for requests that carry that
+key, including redelivery and any partial-batch continuation. A policy that sends the key on the first attempt
+and reuses it on every retry causes at most one of each required effect in all five outcome states. If the
+service eventually accepts and completes the request (including any partial batch), and the client eventually
+receives a successful acknowledgement or a trustworthy status, the policy can also finish the task exactly once.
 \end{proposition}
 
 \begin{proof}
-Every execution of $r$, including the in-flight original and any redelivered copy, carries the same key, so
-at most one execution has an effect; re-issuing until an acknowledgement arrives guarantees at least one.
+Every copy of $r$, including the in-flight original and a redelivered request, carries the same key, so the
+service's deduplication rule prevents excess effects. Eventual successful execution gives the required effect;
+an acknowledgement or status then lets the client conclude that the task is complete. Without those additional
+liveness and observability assumptions, key reuse alone proves only at-most-once safety.
 \end{proof}
+
+For example, a service that caches an error for a key may return that error on every replay, even when the first
+request ran; Stripe documents this behavior for HTTP~500 responses \citep{stripe_idempotent}. Our
+keys-everywhere variant additionally resumes interrupted batches under the same key, a stronger contract than
+ordinary cached-response semantics.
 
 Propositions~\ref{prop:late} and~\ref{prop:keys} make the question of this paper concrete and split it in two.
 For faults that an immediate read-back resolves---a lost acknowledgement, a misleading error, a partial
 batch---careful verification by the model suffices, so exactly-once depends on the model and on what the harness
 lets it see. For faults that a read-back cannot resolve---a request still in flight, or a request delivered
 twice---model-side reasoning can at best decline to act (escalate, or report the operation as uncertain); it
-cannot complete the task exactly once on a key-less write. There, exactly-once depends on the contract (does the
-write accept a key?) and on whether someone attaches the key. The rest of the paper measures each factor in each
-regime.
+cannot guarantee timely completion on a key-less write without a known in-flight bound or privileged status.
+There, low-latency exactly-once recovery depends on the contract (does the write accept a key?) and on whether
+someone attaches the key. The rest of the paper measures each factor in each regime.

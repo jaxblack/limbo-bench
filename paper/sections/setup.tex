@@ -6,7 +6,7 @@ several capability tiers: \texttt{gpt-6-astra}, \texttt{gpt-6-sol}, \texttt{gpt-
 and \texttt{gpt-4.1} (OpenAI), \texttt{claude-opus-5.5} (Anthropic), \texttt{gemini-3.8-flash} (Google) and
 \texttt{grok-4.7} (xAI). All models are used with provider-default
 sampling and reasoning settings. Model identifiers are those exposed by the gateway at the time of the study
-(September 2026). One preregistered model was withdrawn before publication; it is excluded from all analyses and
+(September 2026). One model in the original internal protocol was withdrawn before publication; it is excluded from all analyses and
 from the released data.
 
 \paragraph{Minimal scaffold.} The scaffold is a standard function-calling loop \citep{yao2023react}: a fixed
@@ -27,7 +27,10 @@ models.
 \paragraph{Contract variants.} In the \emph{native} contract (Table~\ref{tab:services}) only billing and one
 social platform accept idempotency keys. The counterfactual \emph{keys-everywhere} contract extends
 Stripe-style key semantics to every non-idempotent write, including resumable batches, late commits and
-redelivered requests, and documents the new parameter in each tool description. Nothing else changes.
+redelivered requests, and documents the new parameter in each tool description. Nothing else changes. This
+counterfactual includes batch resumption and eventual completion of the injected faults; it should not be
+confused with a claim that all real services offer these guarantees. In particular, Stripe caches error
+responses, including HTTP~500, under the original key \citep{stripe_idempotent}.
 
 \paragraph{Recovery conditions.} Two conditions change only the prompt: \emph{aware} adds five sentences of
 reliability guidance to the system prompt, and \emph{reflect} inserts a generic reflection request after any
@@ -70,6 +73,25 @@ three E2 models and all focal writes of instance 0 (\NEFive{} episodes). E6 remo
 sentence from every instruction for five models on instance 0 and pairs each episode with its E1 counterpart
 (\NESix{} episodes).
 
+\paragraph{Real-service check (exploratory).} To test whether the sandbox's write ambiguity transfers to a real
+service, we use the GitHub Issues REST API \citep{github2026issues} in a dedicated private repository containing
+only synthetic issues. Two operations---create an issue and add a comment---make actual authenticated POSTs; a
+local transport shim either drops the request before sending it, hides a successful response, returns an
+injected 500 before or after the POST, schedules a delayed POST, or sends a request twice. The injected 500 and
+redelivery are \emph{not} GitHub infrastructure incidents. Task-specific marker strings prevent cross-case
+contamination, writes accept only the requested synthetic content, and we grade persisted IDs using direct
+GitHub GET and the list endpoint rather than the agent's report. The main matrix uses two previously evaluated
+models, both operations, seven conditions and six unique targets per cell. All 168 4~s cases were collected, but
+analysis and incorporation into the conclusions are paused; no rates from this check are claimed here. The
+4~s delayed-write condition is a short-delay control; a separate 90~s in-flight companion with three targets
+per cell was specified but has not run. A scripted control sent two identical issue-creation requests with one
+\texttt{Idempotency-Key} HTTP header and produced two distinct persisted issues. This is one
+service with two write types, not a validation of all six sandbox services. Model calls use a local GHC Gateway
+backed by the \emph{same} upstream as E1--E6, not a provider-direct official API: no independent model-API
+replication was possible without such credentials. The real-service tasks have no available human operator,
+and actual network timing differs between hidden-outcome worlds; we do not claim observation equivalence for
+their full wall-clock traces.
+
 \paragraph{Statistics.} The world seed depends only on (template, instance, focal write, fault mode), so all
 models, harnesses, conditions and instruction variants face identical worlds, and comparisons are paired.
 Episodes that share a task template are correlated, and there are only twelve templates; a cluster bootstrap over
@@ -77,15 +99,20 @@ so few clusters is anti-conservative and degenerate for cells with no events. Pe
 Wilson intervals on a Kish effective sample size $n/(1+(\bar m-1)\rho)$, where $\bar m$ is the mean number of
 episodes per template in the cell and $\rho$ the within-cell intra-class correlation by template, estimated once
 per experiment. Regression analyses use a Bayesian binomial mixed model with random intercepts for template and
-template$\times$instance (as preregistered for H1, fitted by variational Bayes) and, as a frequentist check,
+template$\times$instance (as specified for H1 in the internal protocol, fitted by variational Bayes) and, as a frequentist check,
 generalized estimating equations clustered by template with bias-reduced (Mancl--DeRouen) standard errors and a
 $t$ reference with $G-1$ degrees of freedom. Paired binary outcomes use exact McNemar tests with Holm correction
-within each family; H4 uses the preregistered two one-sided tests (TOST) with a $\pm$5\,pp margin; observation
+within each family; H4 uses the originally specified two one-sided tests (TOST) with a $\pm$5\,pp margin; observation
 equivalence is assessed by comparing first-action agreement across matched worlds with agreement across independent
 runs of the same world, and by a within-pair permutation test of the total variation distance. The Shapley
-decomposition of McFadden's pseudo-$R^2$ is reported pooled, as preregistered, and separately for faults that an
-immediate read-back resolves and faults it cannot. Episodes whose focal write was never attempted are excluded
+decomposition of McFadden's pseudo-$R^2$ is reported pooled, as initially planned, and separately for faults that an
+immediate read-back resolves and faults it cannot. Its categorical logit fits use a small ridge penalty
+($10^{-7}$ per observation, with an unpenalized intercept) and are checked for non-convergence; replacing the
+initial warning-prone fit changes none of the displayed shares. Episodes whose focal write was never attempted are excluded
 from fault-conditional analyses and reported as trigger rates; episodes that end in a gateway error after eight
-attempts are excluded and re-run. Hypotheses, metrics and analyses were preregistered before E1; E2k, E3k, E5, E6,
-the outcome oracle, the stratified decomposition and the revised interval method were added afterwards and are
-exploratory, and every deviation from the preregistration is listed in the released materials.
+attempts are excluded and re-run. The initial hypotheses, metrics and analyses were recorded in a private Git
+development history before E1, but this public export is not an independently time-stamped preregistration.
+E2k, E3k, E5, E6, the outcome oracle, the stratified decomposition and the revised interval method were added
+afterwards and are exploratory; deviations and post-release corrections are listed in the released protocol log.
+The real-service study is reported separately using descriptive Wilson intervals across its small set of
+synthetic cases; these are not confidence bounds across services or an additional preregistered hypothesis test.

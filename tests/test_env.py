@@ -480,6 +480,16 @@ class TestP0Mechanics(unittest.TestCase):
         self.assertEqual(run({**mspec, "policy": "wait60"}, mail)["grade"]["dup_executed"], 1)
         self.assertEqual(run({**mspec, "policy": "wait120"}, mail)["grade"]["dup_executed"], 0)
 
+    def test_waiting_the_full_bounded_tail_can_also_be_safe(self):
+        charge = self.blind_retry("invoice_batch", "billing_create_charge", self.charge_args)
+        mail = self.blind_retry("incident_open", "mail_send", self.mail_args)
+        for spec, agent in (
+            ({"template": "invoice_batch", "index": 0, "focal": "charge:0"}, charge),
+            ({"template": "incident_open", "index": 0, "focal": "mail"}, mail),
+        ):
+            result = run({**spec, "mode": "timeout_late_tail", "policy": "wait7200"}, agent)
+            self.assertEqual(result["grade"]["dup_executed"], 0, spec["template"])
+
     def test_outcome_oracle_is_the_client_side_upper_bound(self):
         charge = self.blind_retry("invoice_batch", "billing_create_charge", self.charge_args)
         mail = self.blind_retry("incident_open", "mail_send", self.mail_args)

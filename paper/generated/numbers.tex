@@ -25,10 +25,10 @@
 \newcommand{\FrontierStrongDSR}{28}
 \newcommand{\FrontierEventualDSR}{31}
 \newcommand{\FrontierUnverDSR}{13}
-\newcommand{\KeyUseFrontier}{98}
+\newcommand{\KeyUseFrontier}{96.3}
 \newcommand{\OutcomeOracleRedelivShare}{100}
 \newcommand{\OutcomeOracleDupN}{75}
-\newcommand{\KeyUseWeak}{98}
+\newcommand{\KeyUseWeak}{96.3}
 \newcommand{\UnverEscalate}{87}
 \newcommand{\StrongVerify}{96}
 \newcommand{\EventualVerify}{89}
@@ -44,22 +44,27 @@
 \newcommand{\HOneGeeOR}{2.7}
 \newcommand{\HOneGeeLo}{1.3}
 \newcommand{\HOneGeeHi}{5.6}
-\newcommand{\HOneGeeP}{0.01}
+\newcommand{\HOneGeeP}{0.014}
 \newcommand{\HThreeEventual}{6.1}
 \newcommand{\HThreeStrong}{0.2}
 \newcommand{\HThreeN}{853}
-\newcommand{\HThreeGeeP}{0.02}
+\newcommand{\HThreeGeeP}{0.017}
 \newcommand{\HFourIrr}{6.6}
 \newcommand{\HFourRev}{4.6}
 \newcommand{\HFourDiff}{+2.8}
 \newcommand{\HFourLoNinety}{+0.6}
 \newcommand{\HFourHiNinety}{+5.0}
-\newcommand{\HFourP}{0.05}
+\newcommand{\HFourP}{0.046}
 \newcommand{\HFourVerdict}{equivalence within $\pm$5\,pp cannot be established}
+\newcommand{\CompletedGivenDup}{97}
+\newcommand{\CompletedLo}{88}
+\newcommand{\CompletedHi}{99}
 \newcommand{\OverclaimGivenDup}{90}
 \newcommand{\OverclaimLo}{77}
 \newcommand{\OverclaimHi}{96}
 \newcommand{\CompleteNoUncertain}{87}
+\newcommand{\CompleteNoUncertainLo}{71}
+\newcommand{\CompleteNoUncertainHi}{94}
 \newcommand{\NDup}{1,031}
 \newcommand{\ShapContractOne}{0.25}
 \newcommand{\ShareContractOne}{35}
@@ -214,8 +219,8 @@
 \newcommand{\EFiveTailMedian}{6}
 \newcommand{\KeyReusedN}{358}
 \newcommand{\KeyReusedDup}{0}
-\newcommand{\KeyNoFirstN}{14}
-\newcommand{\KeyNoFirstDup}{14}
+\newcommand{\KeyNoFirstN}{2}
+\newcommand{\KeyNoFirstDup}{100}
 \newcommand{\KeyChangedN}{0}
 \newcommand{\KeyChangedDup}{--}
 \newcommand{\KeyDupsNotReused}{100}
@@ -251,7 +256,7 @@
 \newcommand{\ESixNoneVerifyDefault}{--}
 \newcommand{\ESixNoneVerifyPlain}{--}
 \newcommand{\NESix}{915}
-\newcommand{\ESixSummary}{Without the cue, the duplicate rate on faults that a read-back resolves rises from 6\% to 15\% ($p=2\times 10^{-8}$), on late commits from 55\% to 68\% ($p=3\times 10^{-5}$), and on redelivery stays at 74\% ($p=1.00$). On resolvable faults the change is concentrated in the weaker model, \texttt{gpt-5.4-mini} (16\% to 46\%, $p=1\times 10^{-6}$); the frontier models move from 4\% to 7\% ($p=0.01$). The explicit instruction therefore makes agents more careful, and the duplicate rates we report with it are conservative for instructions that leave exactly-once execution implicit.}
+\newcommand{\ESixSummary}{Without the cue, the duplicate rate on faults that a read-back resolves rises from 6\% to 15\% ($p=2\times 10^{-8}$), on late commits from 55\% to 68\% ($p=3\times 10^{-5}$), and on redelivery stays at 74\% ($p=1.00$). On resolvable faults the change is concentrated in the weaker model, \texttt{gpt-5.4-mini} (16\% to 46\%, $p=1\times 10^{-6}$); the frontier models move from 4\% to 7\% ($p=0.012$). The explicit instruction therefore makes agents more careful, and the duplicate rates we report with it are conservative for instructions that leave exactly-once execution implicit.}
 \newcommand{\ETwoVanillaEOS}{77}
 \newcommand{\ETwoVanillaDSR}{23}
 \newcommand{\ETwoVanillaTS}{100}
@@ -339,7 +344,7 @@
 \newcommand{\EKeysGuardRedeliv}{0}
 \newcommand{\ENativeGuardLate}{69}
 \newcommand{\ENativeGuardRedeliv}{74}
-\newcommand{\EKeysVanillaKeyUse}{100}
+\newcommand{\EKeysVanillaKeyUse}{99.6}
 \newcommand{\EThreeMinimalVanillaDSR}{27}
 \newcommand{\EThreeMinimalVanillaEOS}{72}
 \newcommand{\EThreeMinimalVanillaTS}{100}

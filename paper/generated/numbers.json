@@ -313,20 +313,29 @@
   "equivalent_5pp": false
  },
  "H5": {
-  "overclaim_given_dup": 0.9001,
-  "overclaim_ci": [
-   0.7688,
-   0.9607
+  "completed_given_dup": 0.9738,
+  "completed_ci": [
+   0.8797,
+   0.9947
   ],
   "complete_no_uncertainty_given_dup": 0.8652,
+  "complete_no_uncertainty_ci": [
+   0.7119,
+   0.9434
+  ],
+  "overclaim_given_dup": 0.9001,
+  "overclaim_ci": [
+   0.7698,
+   0.9604
+  ],
   "n": 1031
  },
  "H1_mixed": {
-  "coef": 1.9104699336675401,
-  "sd": 0.12599790194091917,
-  "or": 6.75626304810256,
-  "or_lo": 5.2778248143819,
-  "or_hi": 8.648845306643992,
+  "coef": 1.9104699295520156,
+  "sd": 0.12599788144523957,
+  "or": 6.756263020296993,
+  "or_lo": 5.277825004679194,
+  "or_hi": 8.648844923612097,
   "n": 2191
  },
  "H1_gee": {
@@ -363,7 +372,7 @@
   },
   "unresolvable": {
    "contract": 0.6222,
-   "mode": 0.0947,
+   "mode": 0.0948,
    "model": 0.0532,
    "total": 0.7702,
    "n": 1414,
@@ -1163,7 +1172,7 @@
  "e2k_key_use": {
   "gpt-6-sol": 1.0,
   "claude-opus-5.5": 1.0,
-  "gemini-3.8-flash": 1.0
+  "gemini-3.8-flash": 0.989
  },
  "e5": {
   "tail_delay_median": 334.05,
@@ -1500,14 +1509,14 @@
   }
  },
  "key_stability": {
-  "n": 372,
+  "n": 360,
   "same": {
    "n": 358,
    "dup": 0.0
   },
   "no_first": {
-   "n": 14,
-   "dup": 0.1429
+   "n": 2,
+   "dup": 1.0
   },
   "changed": {
    "n": 0,
@@ -1612,7 +1621,7 @@
    ]
   }
  },
- "e6_summary": "Without the cue, the duplicate rate on faults that a read-back resolves rises from 6\\% to 15\\% ($p=2\\times 10^{-8}$), on late commits from 55\\% to 68\\% ($p=3\\times 10^{-5}$), and on redelivery stays at 74\\% ($p=1.00$). On resolvable faults the change is concentrated in the weaker model, \\texttt{gpt-5.4-mini} (16\\% to 46\\%, $p=1\\times 10^{-6}$); the frontier models move from 4\\% to 7\\% ($p=0.01$). The explicit instruction therefore makes agents more careful, and the duplicate rates we report with it are conservative for instructions that leave exactly-once execution implicit.",
+ "e6_summary": "Without the cue, the duplicate rate on faults that a read-back resolves rises from 6\\% to 15\\% ($p=2\\times 10^{-8}$), on late commits from 55\\% to 68\\% ($p=3\\times 10^{-5}$), and on redelivery stays at 74\\% ($p=1.00$). On resolvable faults the change is concentrated in the weaker model, \\texttt{gpt-5.4-mini} (16\\% to 46\\%, $p=1\\times 10^{-6}$); the frontier models move from 4\\% to 7\\% ($p=0.012$). The explicit instruction therefore makes agents more careful, and the duplicate rates we report with it are conservative for instructions that leave exactly-once execution implicit.",
  "e6_n": 915,
  "e3": {
   "minimal": {
@@ -2046,8 +2055,8 @@
   "all_c_eventual": 0.355,
   "fr_c_unver": 0.1278,
   "all_c_unver": 0.1571,
-  "keyable_keyuse_fr": 0.9784,
-  "keyable_keyuse_wk": 0.9815,
+  "keyable_keyuse_fr": 0.963,
+  "keyable_keyuse_wk": 0.963,
   "fr_c_unver_escalate": 0.8722,
   "fr_c_unver_verify": 0.0222,
   "fr_c_strong_escalate": 0.0264,
@@ -2154,7 +2163,7 @@
   "e2k_guard_dsr": 0.0,
   "e2k_guard_late": 0.0,
   "e2k_guard_redeliv": 0.0,
-  "e2k_vanilla_keyuse": 1.0,
+  "e2k_vanilla_keyuse": 0.9963,
   "e2n_vanilla_late": 0.5784,
   "e2n_vanilla_redeliv": 0.7353,
   "e2n_guard_late": 0.6863,

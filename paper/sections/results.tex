@@ -66,7 +66,7 @@ explained variance in duplicates (Shapley shares of McFadden's pseudo-$R^2$) sep
 \begin{table}[t]
 \centering
 \small
-\caption{Shapley decomposition of the explained variance in duplicates. ``Pooled'' is the preregistered analysis
+\caption{Shapley decomposition of the explained variance in duplicates. ``Pooled'' is the originally planned analysis
 over committed faults and redelivery; the other columns split it into faults that an immediate read-back resolves
 (lost acknowledgement, misleading 500, partial batch) and faults it cannot resolve (late commit, redelivery).
 Top: E1 (minimal scaffold, seven models). Bottom: E3 (four harnesses, native condition).}
@@ -83,13 +83,15 @@ regime in which frontier models are nearly exactly-once and weaker models are no
 frontier-class, the model and the contract contribute similarly on these faults (\ShareModelThreeRes{}\% and
 \ShareContractThreeRes{}\%), because the frontier models differ little from one another here.
 
-\paragraph{When it does not, only the contract does.} On late commits and redelivery the contract accounts for
+\paragraph{When immediate read-back cannot, the contract dominates.} On late commits and redelivery the contract accounts for
 \ShareContractOneUnres{}\% and the model for \ShareModelOneUnres{}\%. In the harness experiment the harness adds
-\ShareHarnessThreeRes{}\% on resolvable and \ShareHarnessThreeUnres{}\% on unresolvable faults. The preregistered
+\ShareHarnessThreeRes{}\% on resolvable and \ShareHarnessThreeUnres{}\% on unresolvable faults. The initially planned
 pooled analysis mixes the two regimes and therefore attributes \ShareContractOne{}\% to the contract, \ShareModeOne{}\%
-to the fault stage and only \ShareModelOne{}\% to the model (H2 supported as preregistered, but the stratified
-analysis shows that this is a statement about the unresolvable faults; the preregistered harness share of at
-least 10\% is not supported).
+to the fault stage and only \ShareModelOne{}\% to the model (H2 supported in the pooled analysis, but the stratified
+analysis shows that this is a statement about the unresolvable faults; the initially planned harness share of at
+least 10\% is not supported). A known upper bound on in-flight processing also permits safe waiting, but requires
+time that a key-backed retry does not (\S\ref{sec:e5}); redelivery without a key has no error for the client to
+react to.
 
 \begin{figure}[t]
 \centering
@@ -101,27 +103,29 @@ by tool-contract class and model (E1 and E1s, with 95\% intervals).}
 
 \paragraph{Contract class.} Figure~\ref{fig:contract} breaks duplicates down by the contract of the focal write.
 Among frontier models, a write that accepts an idempotency key is duplicated in \FrontierKeyableDSR{}\% of
-committed-fault episodes and an idempotent write in \FrontierIdemDSR{}\%; frontier models attach a key to a
-keyable write in \KeyUseFrontier{}\% of these episodes without being told to, the weaker model in \KeyUseWeak{}\%.
+committed-fault episodes and an idempotent write in \FrontierIdemDSR{}\%; frontier models attach a key to the
+first focal write that accepts one in \KeyUseFrontier{}\% of these episodes without being told to, the weaker
+model in \KeyUseWeak{}\%.
 Non-idempotent writes are duplicated in \FrontierStrongDSR{}\% of episodes when they can be read back from a
 strongly consistent endpoint and \FrontierEventualDSR{}\% when the read path is eventually consistent. In the
-preregistered mixed-effects logistic regression (random intercepts for template and instance, fixed effects for
+initially specified mixed-effects logistic regression (random intercepts for template and instance, fixed effects for
 model and fault), a non-idempotent write with an eventual or missing read path has \HOneOR{} times the odds of
 being duplicated as a keyable, idempotent or strongly verifiable one (95\% credible interval
 \HOneLo{}--\HOneHi{}); a GEE with bias-reduced cluster-robust errors gives \HOneGeeOR{}
 (\HOneGeeLo{}--\HOneGeeHi{}, $p=\HOneGeeP$). H1 is supported.
 
-\paragraph{A read path that cannot see lagging effects is worse than none.} Writes with no read-back path at all are
+\paragraph{Stale read-back versus no read-back in this benchmark.} Writes with no read-back path at all are
 duplicated less often (\FrontierUnverDSR{}\%) than writes that can be read back. Without a way to check, frontier
-agents escalated to the operator in \UnverEscalate{}\% of committed-fault episodes, and the operator resolves the
+agents escalated to the simulated, truthful operator in \UnverEscalate{}\% of committed-fault episodes, resolving the
 uncertainty; when a read path exists they verified instead (\StrongVerify{}\% strong, \EventualVerify{}\% eventual)
-and trusted a read that could not see a lagging or in-flight effect. Restricting to lost-acknowledgement faults in
+and trusted a read that could not see a lagging or in-flight effect. This is a comparison across different
+services and tasks, not an intervention that removes a read path from the same tool. Restricting to lost-acknowledgement faults in
 which the agent read back before re-issuing, the duplicate rate was \HThreeEventual{}\% on eventually consistent
 and \HThreeStrong{}\% on strongly consistent read paths ($n=\HThreeN$; GEE $p=\HThreeGeeP$; H3 supported).
 
 \paragraph{Changing the contract.} The keys-everywhere contract isolates the causal effect of the contract
-(Table~\ref{tab:e2k}). With keys available on every write but no guard, vanilla agents attach a key in
-\EKeysVanillaKeyUse{}\% of faulted episodes, and the late-commit duplicate rate falls from \ENativeVanillaLate{}\%
+(Table~\ref{tab:e2k}). With keys available on every non-idempotent write but no guard, vanilla agents attach a key
+to \EKeysVanillaKeyUse{}\% of eligible first focal writes, and the late-commit duplicate rate falls from \ENativeVanillaLate{}\%
 to \EKeysVanillaLate{}\% and the redelivery rate from \ENativeVanillaRedeliv{}\% to \EKeysVanillaRedeliv{}\%. With the
 guard attaching keys automatically, late-commit duplicates fall from \ENativeGuardLate{}\% to \EKeysGuardLate{}\%,
 redelivery duplicates from \ENativeGuardRedeliv{}\% to \EKeysGuardRedeliv{}\%, and exactly-once success reaches
@@ -136,7 +140,7 @@ three models pooled).}
 \input{generated/e2k_contract.tex}
 \end{table}
 
-\subsection{Waiting is not a substitute for keys (E5)}
+\subsection{Waiting trades latency for key-free recovery (E5)}
 \label{sec:e5}
 
 Proposition~\ref{prop:late} allows one client-side escape from late commits: if the in-flight delay has a known
@@ -180,14 +184,19 @@ episodes in which the agent never re-issued escape. Under the same delays the ke
 guard reaches \EFiveTailKeysGuardEOS{}\% at \EFiveTailKeysGuardMin{}~minutes. The outcome oracle, which waits exactly
 as long as necessary because it knows when the in-flight request will commit, reaches \EFiveTailOutcomeOracleEOS{}\%
 at \EFiveTailOutcomeOracleMin{}~minutes: the best that any waiting policy can do.
+The sampled tail is truncated at 2~h. A policy that knew and waited this full bound plus the read lag would
+also avoid late-commit duplicates, as a deterministic regression check confirms; the tested waits stop at 1~h.
+Our finding is a latency--safety trade-off when an adequate bound is unknown or costly, not that waiting
+cannot work with a known finite bound.
 
-Keys leave a duplicate only when an agent does not use them from the first attempt. Among the \KeyReusedN{}
-late-commit re-issues under the keys-everywhere contract (E2k, E5k) in which the agent reused the original key,
-\KeyReusedDup{}\% produced a duplicate. The duplicates came from the \KeyNoFirstN{} re-issues whose first attempt
-carried no key (\KeyNoFirstDup{}\% duplicated): the in-flight original and the retry then carry different keys. A
-harness that attaches a key to every first attempt, as the guard does, removes this failure mode, and pinning one
-key per intent would also prevent a model from defeating the key by regenerating it on a retry. This corroborates,
-with real models, the observation of
+For key-eligible non-idempotent writes, a key must be present from the first attempt. Among the \KeyReusedN{}
+late-commit re-issues under the keys-everywhere contract (E2k, E5k) in which the agent reused its original key,
+\KeyReusedDup{}\% produced a duplicate. The \KeyNoFirstN{} re-issues whose first attempt carried no key both
+duplicated: the in-flight original and the retry had different key identities. Naturally idempotent refunds are
+excluded from this comparison because they do not require keys. A harness that attaches a key to every first
+eligible attempt, as the guard does, removes this failure mode. No changed-key retries remained in the analysed
+models; pinning a key per intent would also prevent that possible failure, but its benefit was not measured here.
+This corroborates, with real models, the observation of
 \citet{gopnalswamy2026idempotencybench} from scripted agents that idempotency keys protect only when they are
 stable across retries.
 
@@ -195,13 +204,17 @@ stable across retries.
 \label{sec:rq3}
 
 Of the \NDup{} E1 episodes that produced at least one duplicate, the agent finished with status \texttt{completed}
-in \OverclaimGivenDup{}\% (95\% interval \OverclaimLo{}--\OverclaimHi{}\%), and in \CompleteNoUncertain{}\% it also
-listed no operation as uncertain (H5 supported). A human reading the final report would have had no reason to check.
+in \CompletedGivenDup{}\% (95\% interval \CompletedLo{}--\CompletedHi{}); \CompleteNoUncertain{}\%
+(\CompleteNoUncertainLo{}--\CompleteNoUncertainHi{}\%) also listed no uncertain operation (H5 supported).
+The stricter \emph{overclaim} measure, which requires an unfinished task or a remaining duplicate as well as
+\texttt{completed}, was \OverclaimGivenDup{}\% (\OverclaimLo{}--\OverclaimHi{}); it excludes cases where an agent
+compensated for a duplicate. A human reading the final report would usually have had no reason to check.
 Agents were also not more careful with irreversible writes: after an ambiguous fault they re-issued an irreversible
 write (an email or a comment) without checking in \HFourIrr{}\% of episodes and a reversible one in \HFourRev{}\%
-(difference \HFourDiff{}~pp, 90\% interval \HFourLoNinety{} to \HFourHiNinety{}~pp, $p=\HFourP$). The preregistered
-TOST is inconclusive: \HFourVerdict{}. There is no sign of stakes sensitivity, and the point estimate points the wrong
-way. Appendix~\ref{app:cases} shows representative trajectories.
+(difference \HFourDiff{}~pp, 90\% interval \HFourLoNinety{} to \HFourHiNinety{}~pp, $p=\HFourP$). The prespecified
+TOST is inconclusive: \HFourVerdict{}. We find no evidence of \emph{greater caution} for irreversible writes; the
+adjusted difference instead points weakly in the opposite direction. Appendix~\ref{app:cases} shows representative
+trajectories.
 
 \subsection{Mitigations and harnesses (RQ4)}
 \label{sec:rq4}

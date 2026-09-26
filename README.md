@@ -83,6 +83,10 @@ the pre/post pairs observation-equivalent.
 - `TS` task success; `EOS` exactly-once success (TS and no duplicate ever executed).
 - `dup_executed`, `dup_live`, `dup_compensated`; collateral damage; extraneous writes.
 - `overclaim`: finished as `completed` although TS fails or a duplicate remains.
+  This is narrower than simply reporting `completed` after *any* duplicate:
+  a compensated duplicate is still counted in DSR, but not necessarily in
+  `overclaim`. Key-use rates are based on the model's **first focal write that
+  supports keys**, not on whether any call during the episode included a key.
 - Recovery category from the model's own calls (blind retry, verify then retry/skip,
   same-key or new-key retry, escalate, stop without check, harness-masked).
 - Tool calls, tokens, simulated seconds, simulated human minutes.
@@ -104,7 +108,10 @@ truth. In harness runs the same policies execute inside the MCP tool server, so
 they apply to any harness unchanged.
 
 `--contract keys_everywhere` gives every non-idempotent write Stripe-style key
-semantics; `--instruction-variant plain` removes the closing "exactly once"
+semantics with a resumable-batch extension. A stable key prevents duplicate
+effects, but does not by itself guarantee eventual task completion when a
+service remains unavailable or caches an error (as Stripe does for HTTP 500).
+`--instruction-variant plain` removes the closing "exactly once"
 sentence from every task instruction (same worlds, same grading).
 
 ## Reproducing the paper
@@ -128,14 +135,72 @@ cd paper; tectonic main.tex
 ```
 
 `bash fleet/replicate.sh copilot|hermes|minimal` runs a cross-machine
-replication slice on macOS/Linux. `PREREGISTRATION.md` lists the preregistered
-hypotheses and every later deviation.
+replication slice on macOS/Linux. `PREREGISTRATION.md` lists the internally prespecified
+hypotheses and every later deviation. Its original timestamp comes from the
+private development history; the public export is a later snapshot, not an
+independently archived preregistration.
+
+## Real-service case study (exploratory)
+
+`limbo.real_api` repeats a small slice against actual GitHub Issues REST writes
+in a **dedicated private test repository**; a local shim injects ambiguous
+responses and redelivery, while GET by persisted IDs and the list endpoint
+grade the resulting issues/comments. Its fault injection is synthetic and
+does not claim that GitHub itself returned a 500 or duplicated a request.
+Only the requested synthetic title/body can be written. The script refuses
+non-private or unrelated repositories and never retries an unexpected API
+error. No model or GitHub token appears in result files.
+
+Create a private `YOUR_ACCOUNT/limbo-api-validation-...` repository with the
+description `LIMBO synthetic research validation - private scratch repository`,
+then log into that owner account with `gh auth login` or set
+`LIMBO_GITHUB_TOKEN` in the process environment (never put a token on the
+command line). Set `LIMBO_BASE_URL` and `LIMBO_API_KEY` for your model
+endpoint. A loopback endpoint that does not require a key can omit
+`LIMBO_API_KEY`; the runner sends a nonsecret placeholder. First run
+`python -m limbo.real_api --repo YOUR_ACCOUNT/limbo-api-validation-... --models MODEL --dry-run`
+to review the design. Real writes additionally require
+`--confirm-isolated-test-repo`; results live in `results/real_github/`.
+Do not call a local Copilot-backed proxy an independent official-provider
+API replication: the model backend in this case study must be disclosed as
+the same upstream if that is how the endpoint is configured. The run metadata
+records its initial source commit and subsequent continuation commits; later
+episodes also carry their individual source commit.
+If an infrastructure-only episode is ever retried, preserve its original
+attempt separately and verify on the real service that the unique marker has
+no write before rerunning it. The included case study archived one such
+pre-tool gateway failure as `episodes_gateway_error_v0.jsonl`; it is not
+counted as a model outcome.
+The 168-case 4 s matrix was collected before work was paused; its records
+remain local under the ignored `results/real_github/` directory and have not
+yet been analyzed or released. The 4 s delayed-write condition often commits
+before the model can read. A separate 90 s delayed-write run
+(`results/real_github_late90/`) was specified but **has not been run**; if
+completed later, it must not be pooled with the original matrix.
+`python -m limbo.key_contract_probe --repo YOUR_ACCOUNT/limbo-api-validation-TEST --confirm-isolated-test-repo`
+performs a separate, two-write **scripted**
+check of whether this endpoint honors an `Idempotency-Key` header. It has no
+model calls and refuses to run again if the probe output file exists. The
+private test produced two distinct persisted issues for one repeated header.
+
+For double-blind TMLR review, `python paper/make_supplement.py` builds a
+separate anonymized ZIP containing selected code and canonical traces. It
+redacts the private GitHub test owner and source revisions, fails on
+private identifiers and credential-like strings, excludes unreported models,
+and enforces TMLR's
+100 MB limit. Do not submit the named public repository or the arXiv source
+package as anonymous supplementary material.
+The builder currently requires the unrun 90 s companion data and therefore
+intentionally fails rather than packaging an incomplete journal artifact.
 
 Per-cell intervals in the paper are Wilson intervals on Kish effective sample
 sizes (intra-class correlation by task template), regressions use a binomial
 mixed model and GEE with bias-reduced cluster-robust errors, and the Shapley
 decomposition is reported pooled and split into faults an immediate read-back
-resolves versus faults it cannot (`limbo/analysis.py`, `limbo/report.py`).
+resolves versus faults it cannot. Shapley fits use a small ridge penalty and
+fail if they do not converge; primary hypothesis fits also fail explicitly
+instead of silently producing missing paper numbers (`limbo/analysis.py`,
+`limbo/report.py`).
 
 ## Layout
 
@@ -157,9 +222,12 @@ limbo/pipeline.py      the paper's experiment sequence
 limbo/analysis.py      tidy tables, bootstrap CIs, Shapley decomposition
 limbo/report.py        paper tables, figures, numbers.json, LaTeX macros
 limbo/cases.py         case-study trajectories
+limbo/real_api.py      isolated GitHub Issues real-write case study
+limbo/real_api_analysis.py  descriptive results, delay-stratified
+limbo/key_contract_probe.py  two-request Idempotency-Key header check
 fleet/replicate.sh     cross-machine replication slices
 paper/                 TMLR manuscript (sections/, generated/)
-PREREGISTRATION.md     preregistered hypotheses and every later deviation
+PREREGISTRATION.md     internally prespecified hypotheses and later deviations
 ```
 
 Results are written to `results/<experiment>/episodes.jsonl` (one full record
@@ -178,7 +246,7 @@ deviations 1, 5, 14, 15 and 17 in `PREREGISTRATION.md` archived and replaced
 commit each experiment ran on (`COMMIT`). Extract it in this
 directory, which creates `results/<experiment>/`, and run
 `python -m limbo.report` to regenerate every table, figure and number in the
-paper. One preregistered model was withdrawn before publication; its episodes
+paper. One originally planned model was withdrawn before publication; its episodes
 are not included (deviation 16).
 
 ## Licence and citation

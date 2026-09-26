@@ -1,6 +1,10 @@
-# LIMBO — Preregistration (frozen before E1)
+# LIMBO — Internal prospective protocol and deviations
 
-Frozen on 2026-09-23 before any E1–E4 episode was run. The pilot (E0, 3 models,
+The initial protocol was committed to a private development repository on
+2026-09-23 before E1 (original commit `1aed2cf`). This public repository is a
+later, sanitized snapshot, not a public time-stamped preregistration; external
+readers cannot independently verify the original commit time from this export.
+The pilot (E0, 3 models,
 345 episodes) was used only to debug the harness and to add two fault stages
 (`timeout_late`, `duplicate_delivery`) and one documentation variant
 (`no_consistency_docs`). No threshold below was tuned on pilot data.
@@ -147,8 +151,8 @@ for each experiment is the git commit recorded alongside its results.
 
 ### Before publication
 
-16. **Withdrawn model.** One of the nine preregistered models was withdrawn from the
-    study before publication. All of its episodes (E1, E1s, E2, E2k, E4 guard ablations,
+16. **Withdrawn model.** One of the nine originally planned models was withdrawn from the
+    study after its results had been inspected and before publication. All of its episodes (E1, E1s, E2, E2k, E4 guard ablations,
     E5, E5k and E6) are excluded from every analysis and from the released data, and
     every reported number was recomputed without it; its name is redacted in this
     document. E1 therefore reports eight models, E2, E2k, E5 and E5k three, E6 five and
@@ -160,3 +164,95 @@ for each experiment is the git commit recorded alongside its results.
     request; the fix re-sends the identical request so that the service resumes it (regression
     test `test_guard_resumes_keyed_partial_batch`). The eight affected guard episodes (four in
     E2k, one per harness in E3k) were archived and re-run with the fix; no other policy changed.
+
+### Post-release audit before journal submission
+
+18. **Completion is not the stricter overclaim metric.** The manuscript previously described
+    the 90% `overclaim` rate among duplicate-producing episodes as the rate of reporting
+    `completed`. An agent can compensate for a duplicate, finish the task, and still have
+    caused a duplicate; those cases were excluded from `overclaim` but not from `completed`.
+    The latter rate is 97% after the withdrawn-model exclusion. The revision reports the
+    three distinct conditional rates (`completed`, `completed` without uncertainty, and
+    `overclaim`) with separate intervals. No episode or grading rule changed.
+19. **Key use on the first eligible focal write.** The earlier `key_used` field marked an
+    episode true if *any* model call carried a key; it did not establish that the first
+    focal write did. It now checks the first matching focal write and excludes operations
+    that do not support keys. Keys-everywhere E2k first-write use is 99.6%, not the
+    previously reported 100% for any-key-per-episode. The late-commit key-reuse analysis
+    now excludes naturally idempotent refunds (which do not need keys); it contains 358
+    stable-key re-issues and 2 keyless-first-attempt re-issues, both duplicated. The
+    first-write correction also changes E1's key-use summaries. The raw episodes did
+    not change.
+20. **Exploratory real-service validation (design fixed before these runs).** The arXiv
+    version used six simulated services. To test external validity, an isolated private
+    GitHub Issues repository will provide two non-idempotent real REST writes: create
+    issue and add comment. A local transport shim will inject `none`, `timeout_pre`,
+    `timeout_post`, `http500_pre`, `http500_post`, `timeout_late` (4 s) and
+    `duplicate_delivery`. The 500s are proxy-injected, not GitHub incidents; their
+    pre/post observations are equal while the true API write differs. A GET of persisted
+    IDs plus the list endpoint grades actual side effects; models see only the list.
+    Planned matrix: `gpt-6-sol` and `gpt-5.4-mini`, both operations, seven modes, six
+    independent synthetic targets each (168 cases; initial single-replicate pilot
+    included), vanilla prompt. Rates will be reported descriptively with denominators
+    and intervals, not merged into E1–E6 or presented as a preregistered hypothesis
+    test. All writes stay in a dedicated private test repository. The user has no
+    provider-direct model API key and authorized a local GHC Gateway: these extra
+    model calls have the **same upstream as E1–E6**, so they cannot establish
+    independent official-provider model-API replication. This limitation must remain
+    explicit in the paper.
+21. **Stable-key safety is not unconditional liveness.** A post-release theorem audit
+    found that the earlier proposition inferred eventual task completion from
+    deduplication alone. Real key-based APIs can cache errors (including HTTP 500),
+    and a permanently unavailable service need never accept a write. The corrected
+    proposition proves at-most-once safety with a stable key and states the extra
+    eventual-execution and observable-outcome assumptions required for exactly-once
+    completion. The keys-everywhere experiment uses a deliberately stronger
+    resumable-batch contract. This is a claim/proof correction; no episode or grade
+    was changed.
+22. **Shapley fit warnings.** The initial reporting function globally silenced warnings;
+    unsuppressed, its near-unpenalized L1 logit fits raised 66 parameter-trimming QC
+    warning pairs. It now uses a binomial ridge logit with penalty `1e-7` per
+    observation (intercept unpenalized), checks the penalized score residual and
+    rejects non-finite likelihoods. All E1/E3 Shapley shares agree with the
+    initial fit to 0.1 percentage point. Primary hypothesis fits now fail
+    explicitly on error rather than writing `--` into the paper. This is a
+    computation/quality-control change, not a new experiment.
+23. **Truncated heavy tail has a finite bound.** E5 tests waits only up to 1 h
+    against a distribution truncated at 2 h. The prose now makes explicit that
+    waiting the full 2 h plus read lag also prevents late-commit duplicates
+    under the tested semantics (a deterministic regression test covers this).
+    The empirical comparison is about latency and uncertainty over a practical
+    bound, not an impossibility claim for this bounded distribution.
+24. **Real-service gateway interruption and safe retry.** During the expanded
+    GitHub case study the local GHC Gateway returned HTTP 503 twice before the
+    model issued any tool call on one `timeout_pre` issue case. The case record
+    showed no fault trigger, no write/effect and zero committed issues; a new
+    authenticated GitHub list confirmed its unique marker was absent. We
+    archived the invalid attempt as `results/real_github/episodes_gateway_error_v0.jsonl`
+    before resuming the same case. The replication runner now allows eight
+    model-request attempts, matching the main scaffold's cap, rather than two.
+    This is an infrastructure retry after proving no side effect, not a
+    model-policy rerun or outcome-dependent replacement.
+25. **Short late delay in the real-service pilot.** In all four first-replicate
+    `timeout_late` GitHub cases the 4 s delayed POST had already appeared by
+    the model's first read; these observations do not test an in-flight,
+    still-invisible write. The original 168-case matrix remains unchanged and
+    will be reported as a short-delay control. Before the new run, we specify
+    a separate exploratory companion using a 90 s real delayed POST, both
+    operations, the same two models, and three new synthetic targets per
+    cell (12 cases). Report first-read visibility, task success and duplicates
+    separately; neither result is folded into E1–E6 or the 4 s matrix.
+26. **Real GitHub key-contract probe (scripted, not a model outcome).** In the
+    same isolated private repository we will send two identical synthetic
+    issue-creation POSTs with the same `Idempotency-Key` HTTP header and
+    verify each returned ID by GET. If two issues persist, the header is not
+    honored for this endpoint; otherwise report the observed status/IDs
+    without presuming support. This is a separate illustrative API-contract
+    check, not part of the 168 or 12 model episodes, and does not establish
+    what other services do with keys.
+27. **Paused before journal submission.** The 168-case 4 s GitHub Issues
+    matrix completed with no unresolved infrastructure errors. The separately
+    specified 90 s in-flight companion was not run; the 168-case results have
+    not been analysed or published. The two-request scripted key-header probe
+    returned two different persisted issue IDs. The user paused the work
+    before obtaining an OpenReview account; no TMLR submission was made.

@@ -10,8 +10,9 @@ Protocols such as MCP already let a server declare a tool idempotent, but only a
 non-idempotent tools, a declared read-back (status) operation for every write, and documented visibility and
 in-flight bounds. Proposition~\ref{prop:late} shows that the last is not optional: without a bound on in-flight
 time, verification alone cannot be exactly-once. Our data add a practical corollary: a read-back path that cannot
-see lagging or in-flight effects was worse than no read-back path at all, because agents trusted it instead of
-escalating.
+see lagging or in-flight effects was associated with more duplicates than no read-back path, because agents
+trusted it instead of escalating to our simulated operator. This comparison does not remove a read path from
+the same service and should not be generalized to settings without a reliable human escalation option.
 
 \paragraph{Implications for harness builders.} Harness-level retries sit below the model and are invisible to
 it; a transparent retry of a non-idempotent write turns every lost acknowledgement into a duplicate. A harness
@@ -43,13 +44,20 @@ through one gateway, which fixes some settings (for example reasoning effort) at
 identifiers refer to versions available in September 2026. We evaluate three harnesses and restrict them to the
 sandbox's tools with a shared preamble, which removes some sources of harness variation by design; harnesses with
 other retry or summarization behaviour may differ. The heavy-tailed in-flight delay distribution is a modelling
-choice: the qualitative conclusion of E5 (that any finite waiting bound leaves the tail exposed) holds for any
-unbounded distribution, but the specific success rates depend on its shape. The simulated operator always answers
-truthfully when available. Our tasks are short to medium in length; long-horizon workflows compound the effects we
+choice: our E5 distribution is truncated at 2~h, so waiting that known upper bound would suffice; the
+specific rates for shorter waits depend on its shape. The impossibility of a fixed finite wait applies only
+when no finite in-flight bound is available. The simulated operator always answers
+truthfully when available, and contract classes are associated with particular tasks and services rather than
+randomized independently of them. The counterfactual keys-everywhere contract supplies batch resumption and
+eventual completion; real services can cache errors under a key, so stable keys alone do not guarantee that an
+agent can learn the outcome or finish the task. Our tasks are short to medium in length; long-horizon workflows compound the effects we
 measure but also introduce failure modes we do not study. \texttt{gpt-4.1} is served from a separate low quota and
 its E1 coverage is incomplete (\GptFourOneCoverage{}\%); it is reported per model but excluded from pooled
 statistics. Several analyses (the stratified decomposition, the outcome oracle, E2k, E3k, E5 and E6) were added
-after the preregistration and are exploratory. Finally, the guard is a deliberately simple baseline, not an optimal
+after the internal protocol was recorded and are exploratory. That protocol was not publicly registered before the
+experiments. One originally planned model was withdrawn after its results had been inspected; all pooled estimates
+and released traces exclude it, so claims about models apply only to the retained set and this post-result
+exclusion cannot be treated as prespecified. Finally, the guard is a deliberately simple baseline, not an optimal
 policy; learned or cost-aware verification \citep{tang2026verify} could reduce its latency cost.
 
 \paragraph{Broader impact.} The failure mode studied here causes concrete harm---double charges, repeated
@@ -58,7 +66,8 @@ a mitigation that can be deployed without retraining. The benchmark uses only sy
 services.
 
 \paragraph{Use of AI assistance.} Parts of the benchmark code and of this manuscript were drafted with the
-assistance of an AI coding assistant (GitHub Copilot). We reviewed all content and take full responsibility for it.
+assistance of an AI coding assistant (GitHub Copilot). The human author is responsible for the correctness and
+integrity of the final code, analyses and manuscript.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -66,10 +75,10 @@ assistance of an AI coding assistant (GitHub Copilot). We reviewed all content a
 We asked where exactly-once behaviour lives for tool-using agents, and the answer depends on the failure. When
 an immediate read-back can reveal what happened, it lives in the model: frontier models verify before they retry
 and solve the textbook lost-acknowledgement case, weaker models are misled more often when a server error hides a
-commit, and an explicit instruction helps. When no
-read-back can---a request still in flight, a request delivered twice---it lives in the tool contract: no amount of
-reasoning completes the task exactly once on a key-less write, waiting for an unknown in-flight bound is costly and
-still incomplete, and client-side middleware is capped by what the contract allows. Offering an idempotency key on
-every write, which agents then use, and harnesses that attach and track keys close most of the remaining gap across
+commit, and an explicit instruction helps. When no \emph{immediate} read-back can---a request still in flight,
+a request delivered twice---the contract supplies the lower-latency remedy: reasoning alone cannot guarantee
+completion under an unknown in-flight bound, waiting for a known bound costs time, and middleware cannot prevent
+key-less redelivery. Offering an idempotency key on every non-idempotent write, which agents then use, and
+harnesses that attach and track keys close most of the remaining gap across
 models and harnesses. Agents rarely report the duplicates they cause. \bench{}, its harness adapters and all
-episode traces are available at \CodeURL{} to support work on agents whose actions are safe to repeat.
+analysed episode traces are available via \CodeURL{} to support work on agents whose actions are safe to repeat.

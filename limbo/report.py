@@ -213,6 +213,8 @@ def _gee(formula: str, d: pd.DataFrame, term: str, binomial: bool = True) -> dic
     res = smf.gee(formula, "template", d, family=fam, cov_struct=sm.cov_struct.Exchangeable()).fit(
         cov_type="bias_reduced", maxiter=200)
     b, se = float(res.params[term]), float(res.bse[term])
+    if not np.isfinite(b) or not np.isfinite(se) or se <= 0:
+        raise ValueError(f"non-finite or non-positive GEE estimate for {term}")
     dfree = max(1, d["template"].nunique() - 1)
     q975, q95 = tdist.ppf(0.975, dfree), tdist.ppf(0.95, dfree)
     p = float(2 * tdist.sf(abs(b / se), dfree)) if se > 0 else float("nan")
@@ -220,10 +222,29 @@ def _gee(formula: str, d: pd.DataFrame, term: str, binomial: bool = True) -> dic
             "p": p, "df": dfree, "n": int(len(d))}
 
 
+def duplicate_reporting_metrics(e1: pd.DataFrame) -> dict:
+    dup = e1[e1["triggered"] & (e1["dup_exec"] > 0)].copy()
+    if dup.empty:
+        raise ValueError("H5 requires duplicate-producing, fault-triggered episodes")
+    dup["cnu"] = (dup["claimed_complete"].astype(bool) &
+                  ~dup["uncertain_reported"].fillna(False).astype(bool)).astype(float)
+    use_icc(dup, ["model", "mode"], cols=("claimed_complete", "cnu", "overclaim"))
+
+    def metric(col: str) -> tuple[float, list[float]]:
+        estimate, lo, hi = rate_ci(dup, col)
+        return round(estimate, 4), [round(lo, 4), round(hi, 4)]
+
+    completed, completed_ci = metric("claimed_complete")
+    no_uncertainty, no_uncertainty_ci = metric("cnu")
+    overclaim, overclaim_ci = metric("overclaim")
+    return {"completed_given_dup": completed, "completed_ci": completed_ci,
+            "complete_no_uncertainty_given_dup": no_uncertainty,
+            "complete_no_uncertainty_ci": no_uncertainty_ci,
+            "overclaim_given_dup": overclaim, "overclaim_ci": overclaim_ci, "n": int(len(dup))}
+
+
 def hypotheses(e1: pd.DataFrame, numbers: dict) -> None:
-    import warnings
     from scipy.stats import fisher_exact
-    warnings.filterwarnings("ignore")
     c = e1[e1["triggered"] & e1["mode"].isin(COMMITTED)]
     # H3: among episodes where the agent verified before re-issuing, eventual vs strong read paths.
     # Restricted to lost-acknowledgement faults: under late commits verification fails on any read path.
@@ -233,14 +254,12 @@ def hypotheses(e1: pd.DataFrame, numbers: dict) -> None:
     if t.shape == (2, 2):
         odds, p = fisher_exact(t.to_numpy())
         v["y"], v["eventual"] = v["dsr"].astype(int), (v["contract"] == "non-idem/eventual").astype(int)
-        try:
-            g = _gee("y ~ eventual", v, "eventual")
-            p_gee = g["p"]
-        except Exception:
-            p_gee = float("nan")
+        g = _gee("y ~ eventual", v, "eventual")
         numbers["H3"] = {"dsr_verified_eventual": round(float(v[v.contract == "non-idem/eventual"]["dsr"].mean()), 4),
                          "dsr_verified_strong": round(float(v[v.contract == "non-idem/strong"]["dsr"].mean()), 4),
-                         "p": round(float(p), 6), "p_gee": p_gee, "n": int(len(v))}
+                         "p": round(float(p), 6), "p_gee": g["p"], "n": int(len(v))}
+    else:
+        raise ValueError("H3 requires both contract classes and both duplicate outcomes")
     # H4 (preregistered TOST, +/-5 pp): blind re-issue of irreversible vs reversible non-idempotent writes.
     amb = e1[e1["triggered"] & e1["mode"].isin(PRE | COMMITTED) & (e1["idempotency"] == "non_idempotent")
              & ~e1["category"].isin(["fault_masked", "focal_not_reached", "no_fault"])].copy()
@@ -249,43 +268,30 @@ def hypotheses(e1: pd.DataFrame, numbers: dict) -> None:
     rev, irr = amb[amb.irreversible == 0]["blind"], amb[amb.irreversible == 1]["blind"]
     h4 = {"blind_reversible": round(float(rev.mean()), 4), "blind_irreversible": round(float(irr.mean()), 4),
           "n_rev": int(len(rev)), "n_irr": int(len(irr))}
-    try:
-        g = _gee("blind ~ irreversible", amb, "irreversible", binomial=False)
-        h4.update({"diff": g["b"], "lo90": g["lo90"], "hi90": g["hi90"], "lo95": g["lo95"], "hi95": g["hi95"],
-                   "p_diff": g["p"], "equivalent_5pp": bool(g["lo90"] > -0.05 and g["hi90"] < 0.05)})
-    except Exception as exc:
-        h4["error"] = str(exc)[:200]
+    g = _gee("blind ~ irreversible", amb, "irreversible", binomial=False)
+    h4.update({"diff": g["b"], "lo90": g["lo90"], "hi90": g["hi90"], "lo95": g["lo95"], "hi95": g["hi95"],
+               "p_diff": g["p"], "equivalent_5pp": bool(g["lo90"] > -0.05 and g["hi90"] < 0.05)})
     numbers["H4"] = h4
     # H5: overclaim among episodes with a duplicate.
-    dup = e1[e1["triggered"] & (e1["dup_exec"] > 0)].copy()
-    dup["cnu"] = (dup["claimed_complete"] & ~dup["uncertain_reported"].astype(bool)).astype(float)
-    use_icc(e1[e1["triggered"]].assign(cnu=0.0), ["model", "mode"], cols=("overclaim",))
-    oc = rate_ci(dup, "overclaim")
-    numbers["H5"] = {"overclaim_given_dup": round(float(dup["overclaim"].mean()), 4),
-                     "overclaim_ci": [round(oc[1], 4), round(oc[2], 4)],
-                     "complete_no_uncertainty_given_dup": round(float(dup["cnu"].mean()), 4), "n": int(len(dup))}
+    numbers["H5"] = duplicate_reporting_metrics(e1)
     # H1 (preregistered): mixed-effects logistic regression with a contract fixed effect.
     hh = c[c["contract"].isin(CONTRACT_ORDER)].copy()
     hh["y"] = hh["dsr"].astype(int)
     hh["risky"] = hh["contract"].isin(["non-idem/eventual", "non-idem/unverifiable"]).astype(int)
     hh["tpl_inst"] = hh["template"].astype(str) + ":" + hh["index"].astype(str)
-    try:
-        from statsmodels.genmod.bayes_mixed_glm import BinomialBayesMixedGLM
-        md = BinomialBayesMixedGLM.from_formula("y ~ risky + C(model) + C(mode)",
-                                                {"template": "0 + C(template)", "inst": "0 + C(tpl_inst)"}, hh)
-        fit = md.fit_vb()
-        i = list(md.exog_names).index("risky")
-        mu, sd = float(fit.fe_mean[i]), float(fit.fe_sd[i])
-        numbers["H1_mixed"] = {"coef": mu, "sd": sd, "or": float(np.exp(mu)), "or_lo": float(np.exp(mu - 1.96 * sd)),
-                               "or_hi": float(np.exp(mu + 1.96 * sd)), "n": int(len(hh))}
-    except Exception as exc:
-        numbers["H1_mixed"] = {"error": str(exc)[:200]}
-    try:
-        g = _gee("y ~ risky + C(model) + C(mode)", hh, "risky")
-        numbers["H1_gee"] = {"or": float(np.exp(g["b"])), "or_lo": float(np.exp(g["lo95"])),
-                             "or_hi": float(np.exp(g["hi95"])), "p": g["p"], "n": g["n"]}
-    except Exception as exc:
-        numbers["H1_gee"] = {"error": str(exc)[:200]}
+    from statsmodels.genmod.bayes_mixed_glm import BinomialBayesMixedGLM
+    md = BinomialBayesMixedGLM.from_formula("y ~ risky + C(model) + C(mode)",
+                                            {"template": "0 + C(template)", "inst": "0 + C(tpl_inst)"}, hh)
+    fit = md.fit_vb()
+    i = list(md.exog_names).index("risky")
+    mu, sd = float(fit.fe_mean[i]), float(fit.fe_sd[i])
+    if not np.isfinite(mu) or not np.isfinite(sd) or sd <= 0:
+        raise ValueError("H1 mixed-effects estimate is not finite")
+    numbers["H1_mixed"] = {"coef": mu, "sd": sd, "or": float(np.exp(mu)), "or_lo": float(np.exp(mu - 1.96 * sd)),
+                           "or_hi": float(np.exp(mu + 1.96 * sd)), "n": int(len(hh))}
+    g = _gee("y ~ risky + C(model) + C(mode)", hh, "risky")
+    numbers["H1_gee"] = {"or": float(np.exp(g["b"])), "or_lo": float(np.exp(g["lo95"])),
+                         "or_hi": float(np.exp(g["hi95"])), "p": g["p"], "n": g["n"]}
 
 
 # Faults an immediate read-back resolves (the effect is already visible, or its absence is informative)
@@ -311,7 +317,7 @@ def shapley(df: pd.DataFrame, factors: list[str], label: str, numbers: dict, out
     numbers[f"shapley_{label}"] = res.get("pooled", {})
     numbers[f"shapley_{label}_strata"] = res
     cols = [s for s in ("pooled", "resolvable", "unresolvable") if s in res]
-    head = {"pooled": "pooled (prereg.)", "resolvable": "read-back resolves", "unresolvable": "read-back cannot"}
+    head = {"pooled": "pooled (planned)", "resolvable": "read-back resolves", "unresolvable": "read-back cannot"}
     lines = [r"\begin{tabular}{l" + "c" * len(cols) + "}", r"\toprule",
              "Factor & " + " & ".join(head[c] for c in cols) + r" \\", r"\midrule"]
     for f in factors:
@@ -570,10 +576,10 @@ def e2k_tables(e2: pd.DataFrame, e2k: pd.DataFrame, out: Path, numbers: dict) ->
     lines += [r"\bottomrule", r"\end{tabular}"]
     (out / "e2k_contract.tex").write_text("\n".join(lines), encoding="utf-8")
     # How often do models send a key when the contract offers one (vanilla, keys_everywhere)?
-    kv = e2k[(e2k.policy == "vanilla")]
+    kv = e2k[(e2k.policy == "vanilla") & e2k["triggered"] & e2k["key_used"].notna()]
     numbers["e2k_key_use"] = {}
     for m in order(kv["model"], MODEL_ORDER):
-        numbers["e2k_key_use"][m] = round(float(kv[kv.model == m]["key_used"].mean()), 4) if "key_used" in kv else None
+        numbers["e2k_key_use"][m] = round(float(kv[kv.model == m]["key_used"].mean()), 4)
 
 
 def e3_tables(e3: pd.DataFrame, out: Path, numbers: dict) -> None:
@@ -663,8 +669,8 @@ def e3k_tables(e3: pd.DataFrame, e3k: pd.DataFrame, out: Path, numbers: dict) ->
         g = k[(k.harness == h) & (k.policy == "guard")]
         est, lo, hi = rate_ci(g, "EOS")
         r["keys_guard_eos"] = round(est, 4) if est == est else None
-        r["keys_vanilla_keyuse"] = round(float(k[(k.harness == h) & (k.policy == "vanilla")]["key_used"].mean()), 4) \
-            if len(k[(k.harness == h) & (k.policy == "vanilla")]) else None
+        keyed = k[(k.harness == h) & (k.policy == "vanilla") & k["key_used"].notna()]
+        r["keys_vanilla_keyuse"] = round(float(keyed["key_used"].mean()), 4) if len(keyed) else None
         cells.append("--" if est != est else f"{100 * est:.0f}")
         lines.append(f"{h} & " + " & ".join(cells) + r" \\")
         res[h] = r
@@ -702,12 +708,14 @@ def key_stability(numbers: dict, experiments: tuple[str, ...] = ("e2k", "e5k")) 
                     or r.get("stop_reason") in ("llm_error", "harness_error")):
                 continue
             spec = tools[r["focal"]["tool"]]
-            if spec.contract.identity is None:
+            if spec.contract.identity is None or spec.contract.idempotent:
                 continue
             calls = r["agent_calls"]
             k = next((i for i, c in enumerate(calls) if c["name"] == spec.name
                       and _arg_matches(c["args"], r["focal"]["match"]) and not c["ok"]), None)
             if k is None:
+                continue
+            if not spec.contract.supports_key(calls[k]["args"]):
                 continue
             ident = spec.contract.identity(calls[k]["args"])
             redo = next((i for i in range(k + 1, len(calls)) if calls[i]["name"] == spec.name
@@ -1106,7 +1114,7 @@ def headline(e1: pd.DataFrame, e1_core: pd.DataFrame, e2: pd.DataFrame, e2k: pd.
             H[f"e2k_{p}_dsr"] = rate(g)
             H[f"e2k_{p}_late"] = rate(g[g["mode"] == "timeout_late"])
             H[f"e2k_{p}_redeliv"] = rate(g[g["mode"] == "duplicate_delivery"])
-        H["e2k_vanilla_keyuse"] = rate(k[k.policy == "vanilla"], "key_used")
+        H["e2k_vanilla_keyuse"] = rate(k[(k.policy == "vanilla") & k["key_used"].notna()], "key_used")
         if not e2.empty:
             f = e2[e2["triggered"] & (e2["mode"] != "none")]
             for p in ("vanilla", "guard"):
@@ -1136,7 +1144,7 @@ def fmt_p(p) -> str:
         if mant >= 10:
             mant, e = 1, e + 1
         return f"{mant:.0f}\\times 10^{{{e}}}"
-    return f"{p:.3f}" if p < 0.01 else f"{p:.2f}"
+    return f"{p:.3f}" if p < 0.05 else f"{p:.2f}"
 
 
 def write_macros(numbers: dict, out: Path) -> None:
@@ -1180,10 +1188,10 @@ def write_macros(numbers: dict, out: Path) -> None:
     m["FrontierStrongDSR"] = pct(H.get("fr_c_strong"))
     m["FrontierEventualDSR"] = pct(H.get("fr_c_eventual"))
     m["FrontierUnverDSR"] = pct(H.get("fr_c_unver"))
-    m["KeyUseFrontier"] = pct(H.get("keyable_keyuse_fr"))
+    m["KeyUseFrontier"] = pct1(H.get("keyable_keyuse_fr"))
     m["OutcomeOracleRedelivShare"] = pct(H.get("oo_dup_redeliv_share"))
     m["OutcomeOracleDupN"] = f"{int(H['oo_dup_n'])}" if H.get("oo_dup_n") is not None else "--"
-    m["KeyUseWeak"] = pct(H.get("keyable_keyuse_wk"))
+    m["KeyUseWeak"] = pct1(H.get("keyable_keyuse_wk"))
     m["UnverEscalate"] = pct(H.get("fr_c_unver_escalate"))
     m["StrongVerify"] = pct(H.get("fr_c_strong_verify"))
     m["EventualVerify"] = pct(H.get("fr_c_eventual_verify"))
@@ -1216,10 +1224,15 @@ def write_macros(numbers: dict, out: Path) -> None:
     m["HFourVerdict"] = ("equivalence within $\\pm$5\\,pp is established" if h4.get("equivalent_5pp")
                          else "equivalence within $\\pm$5\\,pp cannot be established")
     h5 = numbers.get("H5") or {}
+    m["CompletedGivenDup"] = pct(h5.get("completed_given_dup"))
+    m["CompletedLo"] = pct((h5.get("completed_ci") or [None, None])[0])
+    m["CompletedHi"] = pct((h5.get("completed_ci") or [None, None])[1])
     m["OverclaimGivenDup"] = pct(h5.get("overclaim_given_dup"))
     m["OverclaimLo"] = pct((h5.get("overclaim_ci") or [None, None])[0])
     m["OverclaimHi"] = pct((h5.get("overclaim_ci") or [None, None])[1])
     m["CompleteNoUncertain"] = pct(h5.get("complete_no_uncertainty_given_dup"))
+    m["CompleteNoUncertainLo"] = pct((h5.get("complete_no_uncertainty_ci") or [None, None])[0])
+    m["CompleteNoUncertainHi"] = pct((h5.get("complete_no_uncertainty_ci") or [None, None])[1])
     m["NDup"] = f"{h5.get('n', 0):,}"
     for tag, key in (("One", "shapley_e1"), ("Three", "shapley_e3")):
         s = numbers.get(key) or {}
@@ -1310,7 +1323,7 @@ def write_macros(numbers: dict, out: Path) -> None:
         m[f"EKeys{tag}Redeliv"] = pct(H.get(f"e2k_{p}_redeliv"))
         m[f"ENative{tag}Late"] = pct(H.get(f"e2n_{p}_late"))
         m[f"ENative{tag}Redeliv"] = pct(H.get(f"e2n_{p}_redeliv"))
-    m["EKeysVanillaKeyUse"] = pct(H.get("e2k_vanilla_keyuse"))
+    m["EKeysVanillaKeyUse"] = pct1(H.get("e2k_vanilla_keyuse"))
     for h in ("minimal", "copilot", "hermes", "codex"):
         tag = h.capitalize()
         for p in ("vanilla", "guard"):

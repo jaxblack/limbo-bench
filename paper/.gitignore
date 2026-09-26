@@ -5,3 +5,4 @@
 *.out
 _probe.*
 arxiv_build/
+supplement_build/
